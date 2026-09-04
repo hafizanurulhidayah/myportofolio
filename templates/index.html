@@ -6,7 +6,7 @@
     <title>Hafiza - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
@@ -28,73 +28,121 @@
             <h1 class="title">PORTF<span class="dot"></span>LIO</h1>
             <p>portfolio 2026 edition</p>
             <p class="arrow">⟶</p>
-            </div>
         </section>
-         <!-- Untuk bagian bawah nya -->
+
+        <!-- Ticker berjalan 1 -->
         <div class="ticker">
             <div class="ticker-track">
-            <span>✦ about me</span><span>✦ about me</span><span>✦ about me</span><span>✦ about me</span>
-            <span>✦ about me</span><span>✦ about me</span><span>✦ about me</span><span>✦ about me</span>
+                <span>✦ about me</span><span>✦ about me</span><span>✦ about me</span><span>✦ about me</span>
+                <span>✦ about me</span><span>✦ about me</span><span>✦ about me</span><span>✦ about me</span>
             </div>
         </div>
-            <!-- ABOUT -->
+
+        <!-- ABOUT -->
         <section class="section" id="about">
             <p class="eyebrow">Lets</p>
             <h2>Get to know Me! ✦</h2>
 
             <div class="about-grid">
-            <div class="photo-frame">
-                <div class="burst"></div>
-                <img src="/static/img/Hafiza.jpg" alt="Foto profil">
+
+                <!-- Foto profil dengan aksen kilau di sekelilingnya -->
+                <div class="photo-frame">
+                    <span class="spark spark-top"></span>
+                    <span class="spark spark-topright"></span>
+                    <span class="spark spark-bottomright"></span>
+                    <span class="spark spark-bottom"></span>
+                    <span class="spark spark-bottomleft"></span>
+                    <span class="spark spark-topleft"></span>
+                    <img src="/static/img/Hafiza.jpg" alt="Foto profil">
+                </div>
+
+                <div class="about-text">
+                    <h3>Hello, I'm Hafiza Nurul Hidayah! ✦</h3>
+                    <p>
+                        I'm currently pursuing a Computer Science degree at Universitas Indonesia
+                        while actively exploring software engineering and collaborative tech
+                        initiatives. Passionate about transforming ideas into functional applications
+                        and continuous learning, I'm always open to connecting and sharing insights
+                        on technology.
+                    </p>
+
+                    <!-- Dua kotak berdampingan: Education & Experience -->
+                    <div class="info-grid">
+
+                        <!-- Kolom kiri: Education (kotak) + Software Skills + Contact Me (tanpa border) -->
+                        <div class="info-col">
+                            <div class="info-box">
+                                <h4>Education</h4>
+                                <div class="exp-item">
+                                    <div class="role">✦ Universitas Indonesia — Computer Science</div>
+                                    <div class="date">2025 – Present</div>
+                                </div>
+                                <div class="exp-item">
+                                  <div class="role">✦ SMAN 61 Jakarta</div>
+                                  <div class="date">2024 – 2025</div>
+                                </div>
+                                <div class="exp-item">
+                                    <div class="role">✦ SMAN 75 Jakarta</div>
+                                    <div class="date">2022 – 2025</div>
+                                </div>
+                            </div>
+
+                            <div class="skills-block">
+                                <h4>Software Skills</h4>
+                                <div class="skills-row">
+                                    <div class="skill-badge" style="background:#DA1F26;">Lorem</div>
+                                    <div class="skill-badge" style="background:#FF9800;">Ipsum</div>
+                                    <div class="skill-badge" style="background:#0ACF83;">Dolor</div>
+                                    <div class="skill-badge" style="background:#00C4CC;">Sir</div>
+                                    <div class="skill-badge" style="background:#31A8FF;">Amet</div>
+                                </div>
+                            </div>
+
+                            <div class="contact-block">
+                                <h4>Contact Me</h4>
+                                <div class="contact-buttons">
+                                    <a href="mailto:hafiza.nurul@ui.ac.id" class="contact-btn contact-btn--dark">Email</a>
+                                    <a href="https://github.com/hafizanurulhidayah" class="contact-btn contact-btn--mid" target="_blank" rel="noopener">GitHub</a>
+                                    <a href="https://www.linkedin.com/in/hafizanurulhidayah" class="contact-btn contact-btn--light" target="_blank" rel="noopener">LinkedIn</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kolom kanan: Experience (kotak) -->
+                        <div class="info-col">
+                            <div class="info-box">
+                                <h4>Experience</h4>
+                                <div class="exp-item">
+                                    <div class="role">✦ Member of Marketing & Communications RISTEK FASILKOM UI</div>
+                                    <div class="date">March 2026 – Present</div>
+                                </div>
+                                <div class="exp-item">
+                                    <div class="role">✦ Intern staff at Department of Public Relations BEM FASILKOM UI</div>
+                                    <div class="date">Sept 2025 – Dec 2025</div>
+                                </div>
+                                <div class="exp-item">
+                                    <div class="role">✦ Staff of Digital Engagement and Collaboration OH FASILKOM UI</div>
+                                    <div class="date">Aug 2025 – Nov 2025</div>
+                                </div>
+                                <div class="exp-item">
+                                    <div class="role">✦ Head of Public Relations Division MPK SMAN 75 Jakarta</div>
+                                    <div class="date">Okt 2023 – Okt 2024</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <div class="about-text">
-                <h3>Hello, I'm Hafiza Nurul Hidayah! ✦</h3>
-                <p>
-                Im currently pursuing a Computer Science degree at Universitas Indonesia while actively exploring software engineering and collaborative tech initiatives. Passionate about transforming ideas into functional applications and continuous learning, Im always open to connecting and sharing insights on technology.
-                </p>
-                 <div class="about-columns">
-          <div>
-            <h4>Experience</h4>
-            <div class="exp-item">
-              <div class="role">✦ Member of Marketing & Communications RISTEK FASILKOM UI</div>
-              <div class="date">March 2026 – Present</div>
-            </div>
-            <div class="exp-item">
-              <div class="role">✦ Intern staff at Department of Public Relations BEM FASILKOM UI</div>
-              <div class="date">Sept 2025 – Dec 2025</div>
-            </div>
-            <div class="exp-item">
-              <div class="role">✦ Staff of Digital Engagement and Collaboration OH FASILKOM UI</div>
-              <div class="date">Aug 2025 – Nov 2025</div>
-            </div>
-            <div class="exp-item">
-              <div class="role">✦ Head of Public Relations Divison MPK SMAN 75 Jakarta</div>
-              <div class="date">Okt 2023 – Okt 2024</div>
-            </div>
-            <div>
-            <h4>Software Skills</h4>
-            <div class="skills-row" style="margin-bottom: 24px;">
-              <div class="skill-badge" style="background:#DA1F26;">Lorem</div>
-              <div class="skill-badge" style="background:#FF9800;">Ipsum</div>
-              <div class="skill-badge" style="background:#0ACF83;">Dolor</div>
-              <div class="skill-badge" style="background:#00C4CC;">Sir</div>
-              <div class="skill-badge" style="background:#31A8FF;">Amet</div>
-            </div>
-            <h4>Contact Me</h4>
-            <div class="contact-row">
-              <a href="mailto:hafiza.nurul@ui.ac.id"class="social-link">Email</a>
-              <a href="https://github.com/hafizanurulhidayah" class="social-link">GitHub</a>
-              <a href="https://www.linkedin.com/in/hafizanurulhidayah" class="social-link">LinkedIn</a>
-            </div>
+        </section>
+
+        <!-- Ticker berjalan 2 -->
+        <div class="ticker green">
+            <div class="ticker-track">
+                <span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span>
+                <span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span>
             </div>
         </div>
-      </div>
-    </div>
-  </section>
-<!-- TICKER 2 -->
-  <div class="ticker green">
-    <div class="ticker-track">
-      <span>✦ some documentation </span><span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span>
-      <span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span>
-    </div>
-  </div>
+    </main>
+</body>
+</html>
