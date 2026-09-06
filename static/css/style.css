@@ -1,3 +1,7 @@
+html{
+  scroll-behavior: smooth;
+}
+
 :root{
   --pink: #F35F9B;
   --pink-soft: #F7CFDF;
@@ -15,7 +19,6 @@ body{
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
   background: var(--bg);
   color: var(--ink);
   font-family: 'Space Grotesk', sans-serif;
@@ -32,12 +35,14 @@ a{ color: inherit; text-decoration: none; }
 .site-header{
   width: 100%;
   padding: 20px 8vw;
+  scroll-margin-top: 0;
 }
 
 .site-header .container{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .site-header .brand{
@@ -45,10 +50,47 @@ a{ color: inherit; text-decoration: none; }
   font-family: 'Sora', sans-serif;
 }
 
+.site-header nav{
+  display: flex;
+  gap: 24px;
+}
+
 .site-header nav a{
   font-size: 14px;
   opacity: 0.8;
 }
+
+.site-header nav a:hover{
+  opacity: 1;
+}
+
+/* Tombol hamburger untuk mobile (dikontrol via JavaScript) */
+.nav-toggle{
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-toggle span{
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* Animasi icon X saat menu terbuka */
+.nav-toggle.is-open span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+.nav-toggle.is-open span:nth-child(2){ opacity: 0; }
+.nav-toggle.is-open span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
+
 
 /* ---------- HERO ---------- */
 .hero{
@@ -100,8 +142,15 @@ a{ color: inherit; text-decoration: none; }
 }
 
 .hero .arrow{
+  display: inline-block;
   font-size: 20px;
   margin-top: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.hero .arrow:hover{
+  transform: translateX(6px);
 }
 
 /* ---------- TICKER ---------- */
@@ -136,6 +185,7 @@ a{ color: inherit; text-decoration: none; }
 /* ---------- ABOUT ---------- */
 .section{
   padding: 72px 8vw;
+  scroll-margin-top: 24px;
 }
 
 .eyebrow{
@@ -147,11 +197,11 @@ a{ color: inherit; text-decoration: none; }
 .section h2{
   font-size: clamp(34px, 5vw, 56px);
   color: var(--pink);
-  font-weight: 900;              /* dibuat lebih bold sesuai permintaan */
+  font-weight: 900;
   margin-bottom: 40px;
 }
 
-.section.dark h2{ color: var(--green); }
+.section.dark h2{ color: var(--pink-soft); }
 
 .about-grid{
   display: grid;
@@ -177,9 +227,6 @@ a{ color: inherit; text-decoration: none; }
   border: 4px solid var(--white);
 }
 
-/* Setiap "spark" adalah segitiga kecil (dibuat dari border trick),
-   diposisikan mengelilingi lingkaran foto lalu diputar (rotate)
-   supaya ujungnya mengarah keluar dari pusat lingkaran. */
 .spark{
   position: absolute;
   width: 0;
@@ -234,6 +281,23 @@ a{ color: inherit; text-decoration: none; }
   opacity: 0.9;
 }
 
+.cta-button{
+  display: inline-block;
+  margin-bottom: 32px;
+  padding: 12px 22px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cta-button:hover{
+  background: var(--ink);
+  color: var(--white);
+}
+
 /* ---------- EDUCATION / EXPERIENCE / CONTACT ---------- */
 .info-grid{
   display: grid;
@@ -248,7 +312,6 @@ a{ color: inherit; text-decoration: none; }
   gap: 28px;
 }
 
-/* Kotak dengan border, dipakai untuk Education, Experience, dan Contact Me */
 .info-box{
   border: 2px solid var(--ink);
   border-radius: 10px;
@@ -292,7 +355,6 @@ a{ color: inherit; text-decoration: none; }
   padding: 2px;
 }
 
-/* Blok Contact Me: tanpa border, judulnya konsisten dengan .info-box h4 */
 .contact-block h4{
   font-size: 13px;
   margin-bottom: 14px;
@@ -305,7 +367,6 @@ a{ color: inherit; text-decoration: none; }
   flex-wrap: wrap;
 }
 
-/* Tombol dasar untuk Email / GitHub / LinkedIn */
 .contact-btn{
   display: inline-flex;
   align-items: center;
@@ -322,85 +383,130 @@ a{ color: inherit; text-decoration: none; }
   opacity: 0.92;
 }
 
-/* Tiga variasi warna hijau dari color palette, satu warna per tombol */
 .contact-btn--dark{  background: var(--green-dark); }
 .contact-btn--mid{   background: var(--green); }
 .contact-btn--light{ background: #3E8B63; }
 
-/* ---------- PROJECTS (dipakai di section presentation/dokumentasi) ---------- */
-.project-grid{
+/* ---------- DOCUMENTATION / PREVIOUS PROJECT & WORK ---------- */
+.section.dark{
+  background: var(--green-dark);
+  color: var(--white);
+}
+
+.section.dark .eyebrow{
+  color: var(--white);
+  opacity: 0.7;
+}
+
+/* Tampilan 3 kolom dalam satu baris */
+.activity-list{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  gap: 16px;
 }
 
-.project-card{
-  background: var(--white);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+/* Ukuran kartu dan padding disesuaikan */
+.activity-card{
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 12px;
 }
 
-.project-card .thumb{
-  aspect-ratio: 4/3;
-  background: linear-gradient(135deg, var(--pink-soft), var(--pink));
+.activity-card h3{
+  font-size: 13px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.activity-gallery{
+  position: relative;
+}
+
+/* Galeri geser murni CSS tanpa JS */
+.gallery-track{
   display: flex;
-  align-items: center;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  border-radius: 8px;
+  gap: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery-track::-webkit-scrollbar{ display: none; }
+.gallery-track{ scrollbar-width: none; }
+
+/* Foto dibuat persegi (1/1) */
+.gallery-track img{
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  scroll-snap-align: start;
+}
+
+/* ---------- FOOTER / CONTACT ---------- */
+.site-footer{
+  padding: 64px 8vw;
+  background: var(--bg);
+  text-align: center;
+}
+
+.site-footer h2{
+  font-size: clamp(28px, 4vw, 42px);
+  color: var(--pink);
+  font-weight: 900;
+  margin-bottom: 24px;
+}
+
+.site-footer .contact-buttons{
   justify-content: center;
-  color: var(--white);
-  font-size: 13px;
-}
-
-.project-card .label{
-  padding: 14px 16px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.project-note{
-  max-width: 640px;
-  margin-top: 40px;
-  font-size: 13px;
-  line-height: 1.6;
-  opacity: 0.85;
 }
 
 /* ---------- RESPONSIVE ---------- */
-@media (max-width: 768px) {
-  .section {
-    padding: 40px 5vw; 
+@media (max-width: 760px){
+  .about-grid{ grid-template-columns: 1fr; }
+  .info-grid{ grid-template-columns: 1fr; }
+  .title{ font-size: 20vw; }
+
+  /* Tetap 3 kolom di mobile dengan penyesuaian gap & padding */
+  .activity-list{ gap: 8px; }
+  .activity-card{ padding: 8px; border-radius: 10px; }
+  .activity-card h3{ font-size: 11px; margin-bottom: 6px; }
+
+  /* Menu navigasi mobile */
+  .nav-toggle{ display: flex; }
+
+  .site-header nav{
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--white);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 10px;
+    padding: 8px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
   }
 
-  .about-grid {
-    grid-template-columns: 1fr;
-    justify-items: center; /* biar otomatis di tengah */
-    text-align: center;
+  .site-header nav.is-open{
+    max-height: 240px;
+    opacity: 1;
   }
 
-  .photo-frame {
-    margin-bottom: 24px;
+  .site-header nav a{
+    padding: 12px 14px;
+    border-radius: 6px;
   }
 
-  .about-text p {
-    max-width: 100%;
-  }
-
-  .info-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .project-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .title {
-    font-size: clamp(48px, 15vw, 90px); 
-  }
-
-  .contact-buttons, .skills-row {
-    justify-content: center; 
+  .site-header nav a:hover{
+    background: var(--bg);
   }
 }

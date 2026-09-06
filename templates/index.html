@@ -10,11 +10,21 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <header class="site-header">
+    <header class="site-header" id="top">
         <div class="container">
-            <a href="#profile" class="brand">Hafiza</a>
-            <nav>
-                <a href="#profile">Profile</a>
+            <a href="#top" class="brand">Hafiza</a>
+
+            <!-- "Checkbox hack": checkbox tersembunyi jadi trigger buka/tutup menu,
+                 murni lewat CSS (:checked), tanpa JavaScript sama sekali -->
+            <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
+            <label for="navToggle" class="nav-toggle" aria-label="Buka menu">
+                <span></span><span></span><span></span>
+            </label>
+
+            <nav id="siteNav">
+                <a href="#about">Profile</a>
+                <a href="#documentation">Previous Project / Work</a>
+                <a href="#contact">Contact</a>
             </nav>
         </div>
     </header>
@@ -27,7 +37,7 @@
 
             <h1 class="title">PORTF<span class="dot"></span>LIO</h1>
             <p>portfolio 2026 edition</p>
-            <p class="arrow">⟶</p>
+            <a href="#about" class="arrow" aria-label="Lihat halaman profile">⟶</a>
         </section>
 
         <!-- Ticker berjalan 1 -->
@@ -66,8 +76,10 @@
                         on technology.
                     </p>
 
+                    <a href="#more-details" class="cta-button">Click here to see more detail</a>
+
                     <!-- Dua kotak berdampingan: Education & Experience -->
-                    <div class="info-grid">
+                    <div class="info-grid" id="more-details">
 
                         <!-- Kolom kiri: Education (kotak) + Software Skills + Contact Me (tanpa border) -->
                         <div class="info-col">
@@ -77,24 +89,24 @@
                                     <div class="role">✦ Universitas Indonesia — Computer Science</div>
                                     <div class="date">2025 – Present</div>
                                 </div>
-                                <div class="exp-item">
-                                  <div class="role">✦ SMAN 61 Jakarta</div>
-                                  <div class="date">2024 – 2025</div>
+                                  <div class="exp-item">
+                                    <div class="role">✦ SMAN 61 Jakarta</div>
+                                    <div class="date">2024 – 2025</div>
                                 </div>
                                 <div class="exp-item">
                                     <div class="role">✦ SMAN 75 Jakarta</div>
-                                    <div class="date">2022 – 2025</div>
+                                    <div class="date">2022 – 2024</div>
                                 </div>
                             </div>
 
                             <div class="skills-block">
-                                <h4>Software Skills</h4>
+                                <h4>Software & Tech Skills</h4>
                                 <div class="skills-row">
-                                    <div class="skill-badge" style="background:#DA1F26;">Lorem</div>
-                                    <div class="skill-badge" style="background:#FF9800;">Ipsum</div>
-                                    <div class="skill-badge" style="background:#0ACF83;">Dolor</div>
-                                    <div class="skill-badge" style="background:#00C4CC;">Sir</div>
-                                    <div class="skill-badge" style="background:#31A8FF;">Amet</div>
+                                    <div class="skill-badge" style="background:#DA1F26;">Figma</div>
+                                    <div class="skill-badge" style="background:#FF9800;">Py</div>
+                                    <div class="skill-badge" style="background:#0ACF83;">Java</div>
+                                    <div class="skill-badge" style="background:#00C4CC;">CC</div>
+                                    <div class="skill-badge" style="background:#31A8FF;">Canva</div>
                                 </div>
                             </div>
 
@@ -116,6 +128,14 @@
                                     <div class="role">✦ Member of Marketing & Communications RISTEK FASILKOM UI</div>
                                     <div class="date">March 2026 – Present</div>
                                 </div>
+                                 <div class="exp-item">
+                                    <div class="role">✦ Programming Mentor of DDP0 2026</div>
+                                    <div class="date">July 2026 – Aug 2026</div>
+                                </div>
+                                <div class="exp-item">
+                                    <div class="role">✦ Mentor of Pilar IKM UI 2026</div>
+                                    <div class="date">June 2026 – Aug 2026</div>
+                                </div>
                                 <div class="exp-item">
                                     <div class="role">✦ Intern staff at Department of Public Relations BEM FASILKOM UI</div>
                                     <div class="date">Sept 2025 – Dec 2025</div>
@@ -136,13 +156,62 @@
             </div>
         </section>
 
-        <!-- Ticker berjalan 2 -->
         <div class="ticker green">
             <div class="ticker-track">
                 <span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span>
                 <span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span><span>✦ some documentation</span>
             </div>
         </div>
+
+        <!-- DOCUMENTATION / PREVIOUS PROJECT & WORK -->
+        <section class="section dark" id="documentation">
+            <p class="eyebrow">a peek behind the scenes</p>
+            <h2>Previous Work / Project ✦</h2>
+
+            <div class="activity-list">
+
+                <article class="activity-card">
+                    <h3>MC @ DATATHON 2026</h3>
+                    <div class="activity-gallery">
+                        <div class="gallery-track">
+                            <img src="/static/img/MCDATATHON.JPG" alt="Dokumentasi kegiatan 1 - foto 1">
+                            <img src="/static/img/MCDATATHON2.JPG" alt="Dokumentasi kegiatan 1 - foto 2">
+                        </div>
+                    </div>
+                </article>
+
+                <article class="activity-card">
+                    <h3>MC SISTECH GDO @ GRAB 2026</h3>
+                    <div class="activity-gallery">
+                        <div class="gallery-track">
+                            <img src="/static/img/MCGRAB.JPEG" alt="Dokumentasi kegiatan 2 - foto 1">
+                            <img src="/static/img/MCGRAB2.JPG" alt="Dokumentasi kegiatan 2 - foto 2">
+                        </div>
+                    </div>
+                </article>
+
+                 <article class="activity-card">
+                    <h3>Programming Mentor DDP0</h3>
+                    <div class="activity-gallery">
+                        <div class="gallery-track">
+                            <img src="/static/img/DDP01.heic" alt="Dokumentasi kegiatan 3 - foto 1">
+                            <img src="/static/img/DDP02.heic" alt="Dokumentasi kegiatan 3 - foto 2">
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
     </main>
+
+    <!-- FOOTER / CONTACT -->
+    <footer class="site-footer" id="contact">
+        <h2>Let's work ✦</h2>
+        <div class="contact-buttons">
+            <a href="mailto:hafiza.nurul@ui.ac.id" class="contact-btn contact-btn--dark">Email</a>
+            <a href="https://github.com/hafizanurulhidayah" class="contact-btn contact-btn--mid" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://www.linkedin.com/in/hafizanurulhidayah" class="contact-btn contact-btn--light" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+    </footer>
 </body>
 </html>
