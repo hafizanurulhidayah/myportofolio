@@ -189,8 +189,9 @@ a{ color: inherit; text-decoration: none; }
 }
 
 .eyebrow{
-  font-size: 13px;
-  opacity: 0.7;
+  font-size: 18px;
+  font-weight: 600; 
+  opacity: 0.85;    
   margin-bottom: 8px;
 }
 
@@ -281,22 +282,11 @@ a{ color: inherit; text-decoration: none; }
   opacity: 0.9;
 }
 
-.cta-button{
-  display: inline-block;
-  margin-bottom: 32px;
-  padding: 12px 22px;
-  border: 2px solid var(--ink);
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-  transition: background 0.2s ease, color 0.2s ease;
+.cta-button {
+  display: none;
 }
 
-.cta-button:hover{
-  background: var(--ink);
-  color: var(--white);
-}
+
 
 /* ---------- EDUCATION / EXPERIENCE / CONTACT ---------- */
 .info-grid{
@@ -464,49 +454,181 @@ a{ color: inherit; text-decoration: none; }
 }
 
 /* ---------- RESPONSIVE ---------- */
+
 @media (max-width: 760px){
-  .about-grid{ grid-template-columns: 1fr; }
-  .info-grid{ grid-template-columns: 1fr; }
-  .title{ font-size: 20vw; }
+  /* 1. HEADER & NAVIGATION */
+  .site-header .container {
+    position: relative;
+  }
 
-  /* Tetap 3 kolom di mobile dengan penyesuaian gap & padding */
-  .activity-list{ gap: 8px; }
-  .activity-card{ padding: 8px; border-radius: 10px; }
-  .activity-card h3{ font-size: 11px; margin-bottom: 6px; }
-
-  /* Menu navigasi mobile */
-  .nav-toggle{ display: flex; }
-
-  .site-header nav{
+  /* untuk sembunyikan checkbox asli tapi tetap berfungsi */
+  .nav-toggle-checkbox {
     position: absolute;
-    top: 100%;
-    right: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Label */
+  .nav-toggle {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    z-index: 1001;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .site-header nav {
+    position: absolute;
+    top: calc(100% + 10px);
     left: 0;
+    right: 0;
     flex-direction: column;
     gap: 0;
     background: var(--white);
     border: 1px solid rgba(0,0,0,0.08);
     border-radius: 10px;
-    padding: 8px;
+    padding: 0 8px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    z-index: 1000;
 
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: max-height 0.25s ease, opacity 0.2s ease;
+    pointer-events: none;
+    transition: max-height 0.3s ease, opacity 0.2s ease, padding 0.3s ease;
   }
 
-  .site-header nav.is-open{
-    max-height: 240px;
+  .nav-toggle-checkbox:checked ~ #siteNav {
+    max-height: 250px;
     opacity: 1;
+    padding: 8px;
+    pointer-events: auto;
   }
 
-  .site-header nav a{
+  .site-header nav a {
     padding: 12px 14px;
     border-radius: 6px;
+    text-align: center;
+    display: block;
   }
 
-  .site-header nav a:hover{
+  .site-header nav a:hover {
     background: var(--bg);
+  }
+
+  /* Animasi X pada Ikon Hamburger */
+  .nav-toggle-checkbox:checked + .nav-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle-checkbox:checked + .nav-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle-checkbox:checked + .nav-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+/* buat click for more details only in mobile */
+  .cta-button{
+  display: inline-block;
+  margin-bottom: 32px;
+  padding: 12px 22px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cta-button:hover{
+  background: var(--ink);
+  color: var(--white);
+}
+
+
+  /* 2. HERO & LAYOUT ADJUSTMENTS */
+  .about-grid { grid-template-columns: 1fr; }
+  .info-grid { grid-template-columns: 1fr; }
+
+  .title { 
+    font-size: clamp(32px, 11vw, 56px);
+    margin: 20px 0 16px;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    text-align: center;
+  }
+
+  .title .dot {
+    width: 0.55em;
+    height: 0.55em;
+  }
+
+  .photo-frame {
+    margin: 0 auto 24px auto;
+  }
+
+  .about-text p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .skills-row, 
+  .contact-buttons, 
+  .contact-row {
+    justify-content: center; 
+  }
+
+  /* 3. CARD & SPACING REDUCTIONS */
+  .info-box {
+    padding: 14px 16px;
+    border-radius: 8px;
+  }
+
+  .info-col {
+    gap: 16px;
+  }
+
+  .exp-item {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .info-box h4,
+  .skills-block h4,
+  .contact-block h4 {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .skill-badge {
+    width: 28px;
+    height: 28px;
+    font-size: 9px;
+  }
+
+  .contact-btn {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+
+  /* 4. ACTIVITY / PREVIOUS WORK SECTION */
+  .activity-list { 
+    grid-template-columns: 1fr; 
+    gap: 20px; 
+  }
+
+  .activity-card { 
+    padding: 14px; 
+    border-radius: 12px; 
+  }
+
+  .activity-card h3 { 
+    font-size: 14px; 
+    margin-bottom: 8px; 
+    text-align: center;
   }
 }

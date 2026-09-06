@@ -14,11 +14,14 @@
         <div class="container">
             <a href="#top" class="brand">Hafiza</a>
 
-            <!-- "Checkbox hack": checkbox tersembunyi jadi trigger buka/tutup menu,
-                 murni lewat CSS (:checked), tanpa JavaScript sama sekali -->
-            <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
-            <label for="navToggle" class="nav-toggle" aria-label="Buka menu">
-                <span></span><span></span><span></span>
+            <!-- 1. Checkbox tersembunyi sebagai pemicu toggle -->
+             <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
+
+            <!-- 2. Tombol 3 garis (hamburger) menggunakan <label> -->
+            <label for="navToggle" class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
             </label>
 
             <nav id="siteNav">
