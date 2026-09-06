@@ -10,3 +10,6 @@ sejauh ini penggunaan element semantik sangat membantu saya dalam pembuatan stat
 
 Jawaban Soal 2:
 Tantangan yang saya rasa cukup sulit adalah memvisualisasikan bagaimana tata letak setiap kolom yang ada di desktop dapat ditampilkan secara rapih di mobile. Sejujurnya saya tipe orang yang cukup sulit untuk mengatur tata letak secara langsung tanpa membuat wireframe kasar terlebih dahulu, jd saya memutuskan untuk membuat wireframe nya terlebih dahulu supaya lebih mudah untuk memvisualisasikannya. Terkait prioritas saya memprioritaskan element hero seperti pada website saya yaitu bagian about me dan juga navigasi agar bbrp element dapat langsung terlihat dengan cara mengatur tata letak dan jga ukuran. 
+
+Jawaban Soal 3 :
+setiap kali saya ingin nambahin informasi file Index.HTML harus diubah secara manual satu per satu. Hal ini saya rasa kurang efisien dan rentan salah. Untuk fungsionalitas dinamis yang saya harap dapat dipelajari dan ditambahkan untuk proyek selanjutnya adalah penerapan javascript
