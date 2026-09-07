@@ -64,7 +64,7 @@ a{ color: inherit; text-decoration: none; }
   opacity: 1;
 }
 
-/* Tombol hamburger untuk mobile (dikontrol via JavaScript) */
+/* Tombol hamburger untuk mobile */
 .nav-toggle{
   display: none;
   flex-direction: column;
@@ -631,4 +631,6 @@ a{ color: inherit; text-decoration: none; }
     margin-bottom: 8px; 
     text-align: center;
   }
+
+  /* 3 card berjajar pada desktop akan berubah menjadi 1 baris pada mobile, judul activity juga diposisikan di tengah pada tampilan mobile  */
 }

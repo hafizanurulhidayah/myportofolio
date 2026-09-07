@@ -10,10 +10,12 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    <!-- header dan navigasi -->
     <header class="site-header" id="top">
         <div class="container">
             <a href="#top" class="brand">Hafiza</a>
 
+            <!-- hamburger menu untuk mobile -->
             <!-- 1. Checkbox tersembunyi sebagai pemicu toggle -->
              <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
 
@@ -24,6 +26,7 @@
             <span></span>
             </label>
 
+            <!-- navigasi -->
             <nav id="siteNav">
                 <a href="#about">Profile</a>
                 <a href="#documentation">Previous Project / Work</a>
@@ -33,6 +36,7 @@
     </header>
 
     <main>
+        <!-- hero section -->
         <section class="hero">
             <svg class="star" viewBox="0 0 100 100"><polygon points="50,0 61,35 98,35 68,57 79,91 50,70 21,91 32,57 2,35 39,35"/></svg>
 
@@ -43,7 +47,7 @@
             <a href="#about" class="arrow" aria-label="Lihat halaman profile">⟶</a>
         </section>
 
-        <!-- Ticker berjalan 1 -->
+        <!-- Ticker berjalan 1 (about me) -->
         <div class="ticker">
             <div class="ticker-track">
                 <span>✦ about me</span><span>✦ about me</span><span>✦ about me</span><span>✦ about me</span>
@@ -51,14 +55,14 @@
             </div>
         </div>
 
-        <!-- ABOUT -->
+        <!-- ABOUT Section -->
         <section class="section" id="about">
             <p class="eyebrow">Lets</p>
             <h2>Get to know Me! ✦</h2>
 
             <div class="about-grid">
 
-                <!-- Foto profil dengan aksen kilau di sekelilingnya -->
+                <!-- Profile photo -->
                 <div class="photo-frame">
                     <span class="spark spark-top"></span>
                     <span class="spark spark-topright"></span>
@@ -69,6 +73,7 @@
                     <img src="/static/img/Hafiza.jpg" alt="Foto profil">
                 </div>
 
+                <!-- Profile bio -->
                 <div class="about-text">
                     <h3>Hello, I'm Hafiza Nurul Hidayah! ✦</h3>
                     <p>
@@ -79,6 +84,7 @@
                         on technology.
                     </p>
 
+                    <!-- button see more details untuk mobile -->
                     <a href="#more-details" class="cta-button">Click here to see more detail</a>
 
                     <!-- Dua kotak berdampingan: Education & Experience -->
@@ -108,11 +114,12 @@
                                     <div class="skill-badge" style="background:#DA1F26;">Figma</div>
                                     <div class="skill-badge" style="background:#FF9800;">Py</div>
                                     <div class="skill-badge" style="background:#0ACF83;">Java</div>
-                                    <div class="skill-badge" style="background:#00C4CC;">CC</div>
+                                    <div class="skill-badge" style="background:#00C4CC;">Capcut</div>
                                     <div class="skill-badge" style="background:#31A8FF;">Canva</div>
                                 </div>
                             </div>
 
+                            <!-- contact buttons -->
                             <div class="contact-block">
                                 <h4>Contact Me</h4>
                                 <div class="contact-buttons">
@@ -171,6 +178,7 @@
             <p class="eyebrow">a peek behind the scenes</p>
             <h2>Previous Work / Project ✦</h2>
 
+            <!-- activity card -->
             <div class="activity-list">
 
                 <article class="activity-card">
