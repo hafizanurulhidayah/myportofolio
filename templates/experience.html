@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- header dan navigasi -->
+    <header class="site-header" id="top">
+        <div class="container">
+          <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
+
+            <!-- hamburger menu untuk mobile -->
+            <!-- 1. Checkbox tersembunyi sebagai pemicu toggle -->
+             <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
+
+            <!-- 2. Tombol 3 garis (hamburger) menggunakan <label> -->
+            <label for="navToggle" class="nav-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+            </label>
+
+            <!-- navigasi -->
+            <nav id="siteNav">
+            <a href="{% url 'main:show_main' %}">Profile</a>
+            <a href="{% url 'main:show_experience' %}">Experience</a>
+        </nav>
+        </div>
+    </header>
+
+  <main>
+    <section class="experience-section" id="experience">
+        <div class="container">
+            <p class="section-kicker">Perjalanan saya sejauh ini</p>
+            <h1>Experience</h1>
+
+            <div class="experience-grid">
+                {% for experience in experience_list %}
+                    <article class="experience-card">
+                        <span class="experience-category">
+                            {{ experience.get_category_display }}
+                        </span>
+                        <h2>{{ experience.title }}</h2>
+                        <p class="experience-description">
+                            {{ experience.description }}
+                        </p>
+
+                        {% if experience.is_ongoing %}
+                            <p class="experience-status">Sedang berlangsung</p>
+                        {% else %}
+                            <p class="experience-status">Selesai</p>
+                        {% endif %}
+                    </article>
+                {% empty %}
+                    <p class="empty-state">
+                        Belum ada pengalaman yang ditambahkan.
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</main>
+
+    <!-- FOOTER / CONTACT -->
+    <footer class="site-footer" id="contact">
+        <h2>Let's work ✦</h2>
+        <div class="contact-buttons">
+            <a href="mailto:hafiza.nurul@ui.ac.id" class="contact-btn contact-btn--dark">Email</a>
+            <a href="https://github.com/hafizanurulhidayah" class="contact-btn contact-btn--mid" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://www.linkedin.com/in/hafizanurulhidayah" class="contact-btn contact-btn--light" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+    </footer>
+</body>
+</html>

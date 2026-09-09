@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hafiza - Portfolio</title>
+    <title>{{ name }} - Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
     <!-- header dan navigasi -->
     <header class="site-header" id="top">
         <div class="container">
-            <a href="#top" class="brand">Hafiza</a>
+           <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
 
             <!-- hamburger menu untuk mobile -->
             <!-- 1. Checkbox tersembunyi sebagai pemicu toggle -->
@@ -28,10 +28,9 @@
 
             <!-- navigasi -->
             <nav id="siteNav">
-                <a href="#about">Profile</a>
-                <a href="#documentation">Previous Project / Work</a>
-                <a href="#contact">Contact</a>
-            </nav>
+            <a href="{% url 'main:show_main' %}">Profile</a>
+            <a href="{% url 'main:show_experience' %}">Experience</a>
+        </nav>
         </div>
     </header>
 
@@ -41,7 +40,6 @@
             <svg class="star" viewBox="0 0 100 100"><polygon points="50,0 61,35 98,35 68,57 79,91 50,70 21,91 32,57 2,35 39,35"/></svg>
 
             <p class="kicker">hi everyone!</p>
-
             <h1 class="title">PORTF<span class="dot"></span>LIO</h1>
             <p>Hafiza's portfolio 2026 edition</p>
             <a href="#about" class="arrow" aria-label="Lihat halaman profile">⟶</a>
@@ -70,19 +68,25 @@
                     <span class="spark spark-bottom"></span>
                     <span class="spark spark-bottomleft"></span>
                     <span class="spark spark-topleft"></span>
-                    <img src="/static/img/Hafiza.jpg" alt="Foto profil">
+                    <img src="/static/img/Hafiza.jpg" alt="Photo of {{name}}">
                 </div>
 
                 <!-- Profile bio -->
                 <div class="about-text">
-                    <h3>Hello, I'm Hafiza Nurul Hidayah! ✦</h3>
-                    <p>
-                        I'm currently pursuing a Computer Science degree at Universitas Indonesia
-                        while actively exploring software engineering and collaborative tech
-                        initiatives. Passionate about transforming ideas into functional applications
-                        and continuous learning, I'm always open to connecting and sharing insights
-                        on technology.
-                    </p>
+                    <h3>Hello, I'm {{name}} ✦</h3>
+                    <p>class="bio">{{ bio }}</p>
+
+                    <div class="profile-info">
+                    <div>
+                        <h4>NPM</h4>
+                        <p>{{ npm }}</p>
+                    </div>
+
+                    <div>
+                        <h4>Study Program</h4>
+                        <p>{{ study_program }}</p>
+                    </div>
+                </div>
 
                     <!-- button see more details untuk mobile -->
                     <a href="#more-details" class="cta-button">Click here to see more detail</a>
