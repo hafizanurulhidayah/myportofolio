@@ -7,7 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2">
 </head>
 <body>
     <!-- header dan navigasi -->
@@ -50,6 +51,13 @@
                         <p class="experience-description">
                             {{ experience.description }}
                         </p>
+                        {% if experience.photos.all %}
+                        <div class="experience-gallery gallery-track">
+                            {% for photo in experience.photos.all %}
+                                <img src="{{ photo.image.url }}" alt="Dokumentasi {{ experience.title }}">
+                            {% endfor %}
+                        </div>
+                    {% endif %}
 
                         {% if experience.is_ongoing %}
                             <p class="experience-status">Sedang berlangsung</p>

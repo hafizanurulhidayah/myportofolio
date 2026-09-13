@@ -18,9 +18,19 @@ class Experience(models.Model):
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateTimeField(auto_now_add=True)
     ended_at = models.DateTimeField(blank=True, null=True)
+
     def __str__(self):
         return self.title
     
     @property
     def is_ongoing(self):
         return self.ended_at is None
+
+class ExperiencePhoto(models.Model):
+    experience = models.ForeignKey(
+        Experience,
+        related_name='photos',
+        on_delete=models.CASCADE
+    )
+    image = models.ImageField(upload_to='experience_photos/')
+
