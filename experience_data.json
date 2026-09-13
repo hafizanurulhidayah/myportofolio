@@ -1,0 +1,38 @@
+[
+{
+  "model": "main.experience",
+  "pk": "17f8638f-9553-4797-b68c-aa380cfc809b",
+  "fields": {
+    "title": "Programming Mentor DDP0 2026",
+    "description": "Mentored students in developing a strong foundation in programming and computational thinking",
+    "category": "full-time",
+    "thumbnail": null,
+    "started_at": "2026-09-09T08:10:19.166Z",
+    "ended_at": null
+  }
+},
+{
+  "model": "main.experience",
+  "pk": "222c0cfa-a3c9-4a57-ba64-90123a98d31a",
+  "fields": {
+    "title": "Member of Marketing and Communications RISTEK FASILKOM UI",
+    "description": "Support the marketing and communications initiatives for Susun Jadwal, a schedule planning mobile application for Universitas Indonesia students, by developing promotional content and executing digital communication campaigns.",
+    "category": "full-time",
+    "thumbnail": null,
+    "started_at": "2026-09-09T07:43:00.102Z",
+    "ended_at": null
+  }
+},
+{
+  "model": "main.experience",
+  "pk": "603d6b08-f982-42f3-9db9-a61e39206842",
+  "fields": {
+    "title": "Member of Marketing and Communications RISTEK FASILKOM UI",
+    "description": "Support the marketing and communications initiatives for Susun Jadwal, a schedule planning website for Universitas Indonesia students, by developing promotional content and executing digital communication campaigns.",
+    "category": "full-time",
+    "thumbnail": null,
+    "started_at": "2026-09-12T08:33:08.994Z",
+    "ended_at": null
+  }
+}
+]
