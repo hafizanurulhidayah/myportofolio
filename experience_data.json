@@ -1,38 +1,210 @@
 [
 {
   "model": "main.experience",
-  "pk": "17f8638f-9553-4797-b68c-aa380cfc809b",
+  "pk": "0a06885c-ff5e-4675-974e-e412006dc95a",
   "fields": {
-    "title": "Programming Mentor DDP0 2026",
-    "description": "Mentored students in developing a strong foundation in programming and computational thinking",
+    "title": "Staff of Digital Engagement and Collaboration Open House Fasilkom UI 2025",
+    "description": "Managed the organization's Instagram account by planning and executing content strategies that achieved 20K+ engagements throughout the campaign. Coordinated with media partners to execute cross-promotional campaigns and maximize event visibility.",
     "category": "full-time",
     "thumbnail": null,
-    "started_at": "2026-09-09T08:10:19.166Z",
+    "started_at": "2026-09-13T12:47:57.938Z",
     "ended_at": null
   }
 },
 {
   "model": "main.experience",
-  "pk": "222c0cfa-a3c9-4a57-ba64-90123a98d31a",
+  "pk": "1809d0f1-d25e-4845-b129-a3c0c72b91b3",
   "fields": {
-    "title": "Member of Marketing and Communications RISTEK FASILKOM UI",
-    "description": "Support the marketing and communications initiatives for Susun Jadwal, a schedule planning mobile application for Universitas Indonesia students, by developing promotional content and executing digital communication campaigns.",
+    "title": "PIC of HighSchool Ambassador Datathon 2026",
+    "description": "Coordinate high school ambassadors for Datathon 2026, ensuring effective communication, engagement, and execution of ambassador activities throughout the program.",
     "category": "full-time",
     "thumbnail": null,
-    "started_at": "2026-09-09T07:43:00.102Z",
+    "started_at": "2026-09-13T12:40:27.656Z",
     "ended_at": null
   }
 },
 {
   "model": "main.experience",
-  "pk": "603d6b08-f982-42f3-9db9-a61e39206842",
+  "pk": "35f60dba-882b-43d8-8e6c-80bbf2eee8f8",
+  "fields": {
+    "title": "Intern Staff at Department of Public Relations BEM FASILKOM UI",
+    "description": "Facilitated faculty events as Master of Ceremony (MC), ensuring smooth event flow and audience engagement, assisted in executing public relations initiatives through event coordination and stakeholder communication.",
+    "category": "internship",
+    "thumbnail": null,
+    "started_at": "2026-09-13T12:46:44.723Z",
+    "ended_at": null
+  }
+},
+{
+  "model": "main.experience",
+  "pk": "4cfff7f2-b6f5-4235-ac65-e33f712be3bf",
   "fields": {
     "title": "Member of Marketing and Communications RISTEK FASILKOM UI",
     "description": "Support the marketing and communications initiatives for Susun Jadwal, a schedule planning website for Universitas Indonesia students, by developing promotional content and executing digital communication campaigns.",
     "category": "full-time",
     "thumbnail": null,
-    "started_at": "2026-09-12T08:33:08.994Z",
+    "started_at": "2026-09-13T12:34:01.948Z",
     "ended_at": null
+  }
+},
+{
+  "model": "main.experience",
+  "pk": "6e311b54-ba67-4b18-a54b-6504a758e29a",
+  "fields": {
+    "title": "Mentor of Pilar IKM UI 2026",
+    "description": "Guide new students through Pilar IKM UI 2026 by providing academic and organizational insights, facilitating discussions, and supporting their adaptation to university life.",
+    "category": "volunteer",
+    "thumbnail": null,
+    "started_at": "2026-09-13T12:44:15.030Z",
+    "ended_at": null
+  }
+},
+{
+  "model": "main.experience",
+  "pk": "f8af1959-c6b3-4af0-b287-4128e67a1fc7",
+  "fields": {
+    "title": "Programming Mentor of DDP0 2026",
+    "description": "Guide students in learning basic Python programming through lab sessions, provide additional insights and guidance, assess lab assignments, and supervise students throughout the learning process.",
+    "category": "volunteer",
+    "thumbnail": null,
+    "started_at": "2026-09-13T12:38:25.225Z",
+    "ended_at": null
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 1,
+  "fields": {
+    "experience": "6e311b54-ba67-4b18-a54b-6504a758e29a",
+    "image": "experience_photos/36664d2e-a658-4197-b7e1-6a6f5555044b.JPG"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 2,
+  "fields": {
+    "experience": "6e311b54-ba67-4b18-a54b-6504a758e29a",
+    "image": "experience_photos/2abb830a-7bcf-47ad-bd4e-648395715d3e.JPG"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 3,
+  "fields": {
+    "experience": "6e311b54-ba67-4b18-a54b-6504a758e29a",
+    "image": "experience_photos/IMG_6837.JPG"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 4,
+  "fields": {
+    "experience": "f8af1959-c6b3-4af0-b287-4128e67a1fc7",
+    "image": "experience_photos/IMG_6468.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 5,
+  "fields": {
+    "experience": "f8af1959-c6b3-4af0-b287-4128e67a1fc7",
+    "image": "experience_photos/IMG_7368_2.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 6,
+  "fields": {
+    "experience": "4cfff7f2-b6f5-4235-ac65-e33f712be3bf",
+    "image": "experience_photos/DSC02581.JPG"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 7,
+  "fields": {
+    "experience": "4cfff7f2-b6f5-4235-ac65-e33f712be3bf",
+    "image": "experience_photos/IMG_7287.JPG"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 8,
+  "fields": {
+    "experience": "4cfff7f2-b6f5-4235-ac65-e33f712be3bf",
+    "image": "experience_photos/IMG_7882.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 9,
+  "fields": {
+    "experience": "4cfff7f2-b6f5-4235-ac65-e33f712be3bf",
+    "image": "experience_photos/IMG_7881.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 10,
+  "fields": {
+    "experience": "1809d0f1-d25e-4845-b129-a3c0c72b91b3",
+    "image": "experience_photos/B0D53DC4-092A-410B-9895-947EAB3F351B.JPG"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 11,
+  "fields": {
+    "experience": "1809d0f1-d25e-4845-b129-a3c0c72b91b3",
+    "image": "experience_photos/516b91d8-b062-452d-9d77-f7e73498a741_2.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 12,
+  "fields": {
+    "experience": "1809d0f1-d25e-4845-b129-a3c0c72b91b3",
+    "image": "experience_photos/IMG_7461.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 13,
+  "fields": {
+    "experience": "35f60dba-882b-43d8-8e6c-80bbf2eee8f8",
+    "image": "experience_photos/IMG_4723C0364323-1.jpeg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 14,
+  "fields": {
+    "experience": "35f60dba-882b-43d8-8e6c-80bbf2eee8f8",
+    "image": "experience_photos/c41e744c610206c15ccf69b908204a38.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 15,
+  "fields": {
+    "experience": "0a06885c-ff5e-4675-974e-e412006dc95a",
+    "image": "experience_photos/04bf91ce3c3753d567ed813c0512520e.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 16,
+  "fields": {
+    "experience": "0a06885c-ff5e-4675-974e-e412006dc95a",
+    "image": "experience_photos/a6ec0dc58c427f6f88e33f17f4376a77.jpg"
+  }
+},
+{
+  "model": "main.experiencephoto",
+  "pk": 17,
+  "fields": {
+    "experience": "0a06885c-ff5e-4675-974e-e412006dc95a",
+    "image": "experience_photos/226d90e78822d27a1992cefa288f07b8.jpg"
   }
 }
 ]
