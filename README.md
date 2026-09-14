@@ -11,6 +11,7 @@ Strategi prompting yang saya gunakan adalah mencoba untuk menanyakan beberapa ha
 
 Saya menggunakan AI untuk membantu dalam mengatur layout, spacing, ukuran, serta menyesuaikan tampilan website agar lebih responsif pada ukuran desktop dan mobile. Bagian yang paling banyak dibantu AI adalah CSS, terutama ketika saya mengalami kesulitan dalam menentukan penyesuaian layout pada desktop dan mobile. Sementara itu, saya tetap menentukan sendiri struktur HTML, konten website, konsep tampilan, serta membuat wireframe sebagai dasar rancangan website. Selain itu, saya juga meminta bantuan AI untuk menulis commit message yang sekiranya cukup sesuai dengan isi yang saya punya.
 
+Saya juga menggunakan AI untuk memberikan saya penjelasan mengenai instruksi instruksi dan fitur yang ada di django, terkadang saya bingung harus melakukan apa di terminal atau bagaimana caranya melakukan suatu hal tanpa dimasukkan di terminal (contohnya ketika saya ingin menambahkan data untuk education and experience), saya memutuskan untuk nanya ke AI dan juga mencari referensi di internet
 
 ### Tugas 1
 1. Pada kode html yang saya buat saya menggunakan beberapa element yang telah disebutkan di website PBP CS UI, seperti <header> yang saya gunakan untuk bagian judul di website, ;lalu <main> juga saya gunakan untuk highlight main topic / main focus pada halama tersebut, saya juga menggunakan <section> untuk membagi halaman jd bbrp bagian berbeda
@@ -20,3 +21,9 @@ sejauh ini penggunaan element semantik sangat membantu saya dalam pembuatan stat
 
 3. Setiap kali saya ingin menambahkan informasi di file Index.HTML harus diubah secara manual satu per satu. Hal ini saya rasa kurang efisien dan rentan salah. Untuk fungsionalitas dinamis yang saya harap dapat dipelajari dan ditambahkan untuk proyek selanjutnya adalah penerapan javascript
 
+### Tugas 2
+1. saat user mencoba untuk membuka halaman portofolio baru, browser akan mengirimkan request, hal ini pertama kali diterima oleh urls.py yg berfungsi menentukan yang mana yang menangani URL tersebut. lalu, request diteruskan ke urls.py pada main, yang menentukan view yang sesuai berdasarkan URL yang diakses. Setelah itu view akan menjalankan logika untuk mengambil data yang diperlukan dari model. Model sendiri berfungsi sebagai representasi data yang tersimpan di database. Setelah data diperoleh, view mengirimkan data tersebut ke template. Template kemudian menggabungkan struktur HTML dengan data dari model menggunakan Django Template Language. Hasil HTML tersebut dikirim kembali oleh Django ke browser sehingga halaman portofolio beserta datanya dapat dilihat.
+
+2. karena model memungkinkan data dikelola secara terstruktur di dalam database. Dengan cara ini, template hanya bertanggung jawab untuk menampilkan data, sedangkan pengelolaan data dilakukan melalui model. Hal ini membuat app lebih mudah dimaintain dan flexible
+
+3. makemigrations digunakan untuk membuat file migrasi berdasarkan perubahan yang dilakukan pada model. File migrasi tersebut berisi instruksi mengenai perubahan struktur database yang perlu dilakukan. Migrate digunakan untuk menerapkan file migrasi tersebut ke database, sehingga struktur database benar-benar berubah sesuai dengan model terbaru. contoh seperti model saya yaitu education semisal awalnya hanya ada institution, degree, dan year lalu saya ingin menambahkan field baru yaitu achievements. Maka gunakan makemigrations lalu migrate
