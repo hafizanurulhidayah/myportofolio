@@ -34,3 +34,9 @@ class ExperiencePhoto(models.Model):
     )
     image = models.ImageField(upload_to='experience_photos/')
 
+class Education(models.Model):
+    institution = models.CharField(max_length=100) 
+    degree = models.CharField(max_length=100) 
+    year = models.CharField(max_length=20)
+    achievements = models.TextField()
+

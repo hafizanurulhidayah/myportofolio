@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Portfolio</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Sora:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2">
+</head>
+
+<body>
+
+    <!-- HEADER DAN NAVIGASI -->
+    <header class="site-header" id="top">
+        <div class="container">
+
+            <a href="{% url 'main:show_main' %}" class="brand">{{ name }}</a>
+
+            <!-- hamburger menu untuk mobile -->
+            <input type="checkbox" id="navToggle" class="nav-toggle-checkbox">
+
+            <label for="navToggle" class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </label>
+
+            <!-- navigasi -->
+            <nav id="siteNav">
+                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_experience' %}">Experience</a>
+                <a href="{% url 'main:show_education' %}">Education</a>
+            </nav>
+
+        </div>
+    </header>
+
+
+    <main>
+        <section class="experience-section" id="education">
+            <div class="container">
+
+                <p class="section-kicker">Latar belakang pendidikan saya</p>
+                <h1>Education</h1>
+
+                <div class="experience-grid">
+
+                    {% for education in education_list %}
+                        <article class="experience-card">
+
+                            <h2>{{ education.institution }}</h2>
+
+                            <p class="experience-description">
+                                {{ education.degree }}
+                            </p>
+
+                            <p class="experience-status">
+                                {{ education.year }}
+                            </p>
+
+                            {% if education.achievements %}
+                                <div class="education-achievements">
+                                    <h3>Achievements</h3>
+
+                                    <ul>
+                                        {% for achievement in education.achievement_list %}
+                                            <li>{{ achievement }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                        </article>
+
+                    {% empty %}
+                        <p class="empty-state">
+                            Belum ada informasi pendidikan yang ditambahkan.
+                        </p>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <!-- FOOTER / CONTACT -->
+    <footer class="site-footer" id="contact">
+        <h2>Let's work ✦</h2>
+
+        <div class="contact-buttons">
+            <a href="mailto:hafiza.nurul@ui.ac.id"
+               class="contact-btn contact-btn--dark">
+                Email
+            </a>
+
+            <a href="https://github.com/hafizanurulhidayah"
+               class="contact-btn contact-btn--mid"
+               target="_blank"
+               rel="noopener">
+                GitHub
+            </a>
+
+            <a href="https://www.linkedin.com/in/hafizanurulhidayah"
+               class="contact-btn contact-btn--light"
+               target="_blank"
+               rel="noopener">
+                LinkedIn
+            </a>
+        </div>
+    </footer>
+
+</body>
+</html>
