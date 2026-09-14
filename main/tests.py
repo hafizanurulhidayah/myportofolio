@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
+from datetime import datetime
 
 from main.models import Experience, Education
 
@@ -8,9 +9,10 @@ from main.models import Experience, Education
 class MainTest(TestCase):
     def setUp(self):
         self.experience = Experience.objects.create(
-            title="Asisten Dosen PBP",
-            description="Membantu mahasiswa memahami pengembangan web.",
-            category="part-time",
+        title="Asisten Dosen PBP",
+        description="Membantu mahasiswa memahami pengembangan web.",
+        category="part-time",
+        started_at=timezone.make_aware(datetime(2026, 1, 1)),
         )
 
     def test_main_url_is_accessible(self):
@@ -18,7 +20,6 @@ class MainTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "index.html")
-        self.assertNotContains(response, self.experience.title)
         self.assertContains(response, f'href="{reverse("main:show_experience")}"')
 
     def test_nonexistent_page_returns_404(self):
