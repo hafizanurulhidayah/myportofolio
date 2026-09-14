@@ -93,83 +93,98 @@
                     <a href="#more-details"class="cta-button mobile-only">Click here to see more detail</a>
 
                     <!-- Dua kotak berdampingan: Education & Experience -->
-                    <div class="info-grid" id="more-details">
+                   <!-- Dua kolom: kiri = Education + Skills + Contact, kanan = Experience -->
+        <div class="info-grid" id="more-details">
 
-                        <!-- Kolom kiri: Education (kotak) + Software Skills + Contact Me (tanpa border) -->
-                        <div class="info-col">
-                            <div class="info-box">
-                                <h4>Education</h4>
-                                <div class="exp-item">
-                                    <div class="role">✦ Universitas Indonesia — Computer Science</div>
-                                    <div class="date">2025 – Present</div>
-                                </div>
-                                  <div class="exp-item">
-                                    <div class="role">✦ SMAN 61 Jakarta</div>
-                                    <div class="date">2024 – 2025</div>
-                                </div>
-                                <div class="exp-item">
-                                    <div class="role">✦ SMAN 75 Jakarta</div>
-                                    <div class="date">2022 – 2024</div>
-                                </div>
+            <!-- Kolom kiri -->
+            <div class="info-left">
+
+                <!-- Education -->
+                <div class="info-box">
+                    <h4>Education</h4>
+
+                    {% for education in education_list %}
+                        <div class="exp-item">
+                            <div class="role">
+                                ✦ {{ education.institution }} — {{ education.degree }}
                             </div>
-
-                            <div class="skills-block">
-                                <h4>Software & Tech Skills</h4>
-                                <div class="skills-row">
-                                    <div class="skill-badge" style="background:#DA1F26;">Figma</div>
-                                    <div class="skill-badge" style="background:#FF9800;">Py</div>
-                                    <div class="skill-badge" style="background:#0ACF83;">Java</div>
-                                    <div class="skill-badge" style="background:#00C4CC;">Capcut</div>
-                                    <div class="skill-badge" style="background:#31A8FF;">Canva</div>
-                                </div>
-                            </div>
-
-                            <!-- contact buttons -->
-                            <div class="contact-block">
-                                <h4>Contact Me</h4>
-                                <div class="contact-buttons">
-                                    <a href="mailto:hafiza.nurul@ui.ac.id" class="contact-btn contact-btn--dark">Email</a>
-                                    <a href="https://github.com/hafizanurulhidayah" class="contact-btn contact-btn--mid" target="_blank" rel="noopener">GitHub</a>
-                                    <a href="https://www.linkedin.com/in/hafizanurulhidayah" class="contact-btn contact-btn--light" target="_blank" rel="noopener">LinkedIn</a>
-                                </div>
+                            <div class="date">
+                                {{ education.year }}
                             </div>
                         </div>
+                    {% endfor %}
+                </div>
 
-                        <!-- Kolom kanan: Experience (kotak) -->
-                        <div class="info-col">
-                            <div class="info-box">
-                                <h4>Experience</h4>
-                                <div class="exp-item">
-                                    <div class="role">✦ Member of Marketing & Communications RISTEK FASILKOM UI</div>
-                                    <div class="date">March 2026 – Present</div>
-                                </div>
-                                 <div class="exp-item">
-                                    <div class="role">✦ Programming Mentor of DDP0 2026</div>
-                                    <div class="date">July 2026 – Aug 2026</div>
-                                </div>
-                                <div class="exp-item">
-                                    <div class="role">✦ Mentor of Pilar IKM UI 2026</div>
-                                    <div class="date">June 2026 – Aug 2026</div>
-                                </div>
-                                <div class="exp-item">
-                                    <div class="role">✦ Intern staff at Department of Public Relations BEM FASILKOM UI</div>
-                                    <div class="date">Sept 2025 – Dec 2025</div>
-                                </div>
-                                <div class="exp-item">
-                                    <div class="role">✦ Staff of Digital Engagement and Collaboration OH FASILKOM UI</div>
-                                    <div class="date">Aug 2025 – Nov 2025</div>
-                                </div>
-                                <div class="exp-item">
-                                    <div class="role">✦ Head of Public Relations Division MPK SMAN 75 Jakarta</div>
-                                    <div class="date">Okt 2023 – Okt 2024</div>
-                                </div>
-                            </div>
+                <!-- Software & Tech Skills -->
+                <div class="skills-block">
+                    <h4>Software & Tech Skills</h4>
+
+                    <div class="skills-row">
+                        <div class="skill-badge" style="background:#DA1F26;">Figma</div>
+                        <div class="skill-badge" style="background:#FF9800;">Py</div>
+                        <div class="skill-badge" style="background:#0ACF83;">Java</div>
+                        <div class="skill-badge" style="background:#00C4CC;">Capcut</div>
+                        <div class="skill-badge" style="background:#31A8FF;">Canva</div>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="contact-block">
+                    <h4>Contact Me</h4>
+
+                    <div class="contact-buttons">
+                        <a href="mailto:hafiza.nurul@ui.ac.id"
+                        class="contact-btn contact-btn--dark">
+                            Email
+                        </a>
+
+                        <a href="https://github.com/hafizanurulhidayah"
+                        class="contact-btn contact-btn--mid"
+                        target="_blank"
+                        rel="noopener">
+                            GitHub
+                        </a>
+
+                        <a href="https://www.linkedin.com/in/hafizanurulhidayah"
+                        class="contact-btn contact-btn--light"
+                        target="_blank"
+                        rel="noopener">
+                            LinkedIn
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Kolom kanan: Experience -->
+            <div class="info-box experience-box">
+
+                <h4>Experience</h4>
+
+                {% for experience in experience_list %}
+                    <div class="exp-item">
+
+                        <div class="role">
+                            ✦ {{ experience.title }}
+                        </div>
+
+                        <div class="date">
+                            {{ experience.started_at|date:"M Y" }}
+                            –
+                            {% if experience.ended_at %}
+                                {{ experience.ended_at|date:"M Y" }}
+                            {% else %}
+                                Present
+                            {% endif %}
                         </div>
 
                     </div>
-                </div>
+                {% endfor %}
+
             </div>
-        </section>
+
+        </div>
+                </section>
 
         <div class="ticker green">
             <div class="ticker-track">
