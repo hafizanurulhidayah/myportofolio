@@ -680,13 +680,28 @@ a{ color: inherit; text-decoration: none; }
   justify-content: center;
 }
 
-/* ---------- RESPONSIVE ---------- */
+.mobile-only {
+  display: none;
+}
+
+/* ---------- RESPONSIVE MOBILE ---------- */
 @media (max-width: 760px){
   .about-grid{ grid-template-columns: 1fr; }
   .info-grid{ grid-template-columns: 1fr; }
   
   /* Ganti atau tambahkan max() agar ukurannya tidak kebablasan besar di HP */
   .title{ font-size: clamp(40px, 15vw, 64px); } 
+
+  .hero .star{
+    top: 20px;
+    right: 4vw;
+    width: 24px;
+    height: 24px;
+  }
+
+  .mobile-only {
+    display: inline-block;
+  }
 
   .experience-grid{ grid-template-columns: 1fr; }
   .experience-section{ padding: 72px 8vw; }
