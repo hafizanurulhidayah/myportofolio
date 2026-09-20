@@ -5,52 +5,84 @@
 {% endblock meta %}
 
 {% block content %}
-
 <main>
-    <section class="experience-section" id="education">
+    <section class="education-section" id="education">
         <div class="container">
 
-            <p class="section-kicker">Latar belakang pendidikan saya</p>
-            <h1>Education</h1>
+            <p class="section-kicker">
+                Background pendidikan saya sejauh ini
+            </p>
 
-            <div class="experience-grid">
+            <div class="education-header">
+                <h1>Education</h1>
 
-                {% for education in education_list %}
-                    <article class="experience-card">
+                <a href="{% url 'main:create_education' %}"
+                   class="button education-add-button">
+                    <span aria-hidden="true">+</span>
+                    Tambah Education Background
+                </a>
+            </div>
 
-                        <h2>{{ education.institution }}</h2>
+            <form method="get"
+                  action="{% url 'main:show_education' %}"
+                  class="education-search">
 
-                        <p class="experience-description">
-                            {{ education.degree }}
-                        </p>
+                <input type="search"
+                       name="title"
+                       value="{{ title_query }}"
+                       placeholder="Cari berdasarkan nama background edukasi"
+                       class="education-search__input"
+                       aria-label="Cari berdasarkan nama background edukasi">
 
-                        <p class="experience-status">
-                            {{ education.year }}
-                        </p>
+                <button type="submit" class="button">
+                    Cari
+                </button>
+            </form>
 
-                        {% if education.achievement_list %}
-                            <div class="education-achievements">
-                                <h3>Achievements</h3>
+            <div class="education-grid">
 
-                                <ul>
-                                    {% for achievement in education.achievement_list %}
-                                        <li>{{ achievement }}</li>
-                                    {% endfor %}
-                                </ul>
+                    {% for education in education_list %}
+
+                        <div class="education-card">
+
+                            <h2>{{ education.institution }}</h2>
+                            <p>{{ education.degree }}</p>
+                            <p>{{ education.year }}</p>
+                            <p>{{ education.achievements }}</p>
+
+                            <div class="education-card-actions">
+                                <div class="education-actions">
+
+                                    {% if education.education_url %}
+                                        <a href="{{ education.education_url }}"
+                                        class="button">
+                                            Lihat Education Background
+                                        </a>
+                                    {% endif %}
+
+                                    {% include "components/education_delete_modal.html" with education=education %}
+
+                                </div>
                             </div>
+                        </div>
+
+                    {% empty %}
+
+                        {% if title_query %}
+                            <p class="empty-state">
+                                Tidak ada education background dengan nama tersebut.
+                            </p>
+                        {% else %}
+                            <p class="empty-state">
+                                Belum ada education background yang ditambahkan.
+                            </p>
                         {% endif %}
 
-                    </article>
+                    {% endfor %}
 
-                {% empty %}
-                    <p class="empty-state">
-                        Belum ada informasi pendidikan yang ditambahkan.
-                    </p>
-                {% endfor %}
-
-            </div>
+                </div>
         </div>
     </section>
 </main>
-
 {% endblock content %}
+

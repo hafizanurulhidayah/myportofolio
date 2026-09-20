@@ -8,11 +8,22 @@ from django.forms import (
     CharField,
 )
 
+from django import forms
+
 
 from main.models import Education, Experience
 
 
 class EducationForm(ModelForm):
+    secret = forms.CharField(
+        label="Security Code",
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Security Code"
+        }),
+        required=True,
+    )
+
+    
     class Meta:
         model = Education
         fields = [

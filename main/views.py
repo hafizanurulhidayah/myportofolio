@@ -57,6 +57,25 @@ def show_experience(request):
 
     return render(request, "experience.html", context)
 
+def show_educations(request):
+    education_list = Education.objects.all()
+
+    context = {
+        "name": "Hafiza Nurul Hidayah",
+        "education_list": education_list,
+        "title_query": request.GET.get("title", "").strip(),
+    }
+
+    return render(request, "education.html", context)
+
+    context = {
+        "name": "Hafiza Nurul Hidayah",
+        "education_list": educations,
+        "title_query": title_query,
+    }
+    return render(request, "education.html", context)
+
+
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
 
@@ -77,25 +96,33 @@ def delete_experience(request, experience_id):
 
     return redirect("main:show_experience")
 
-def show_education(request):
-    education_list = Education.objects.all()
+def delete_education(request, education_id):
+    education = get_object_or_404(Education, pk=education_id)
 
-    for education in education_list:
-        education.achievement_list = education.achievements.splitlines()
-
-    context = {
-        "education_list": education_list,
-    }
-
-    return render(request, "education.html", context)
-
-
+    if request.method == "POST":
+          secret = request.POST.get("secret")
+          env_secret = os.getenv("PORTFOLIO_SECRET")
+  
+          print("SECRET DARI FORM:", repr(secret))
+          print("SECRET DARI ENV :", repr(env_secret))
+  
+          if secret != env_secret:
+              messages.error(request, "Security Code salah!")
+              return redirect("main:show_education")
+  
+          education.delete()
+          messages.success(request, "Education berhasil dihapus!")
+          return redirect("main:show_education")
+  
+     
 def get_education_json(request):
     title_query = request.GET.get("title", "").strip()
     educations = Education.objects.all()
 
     if title_query:
-       educations = Education.objects.filter(title__icontains=title_query)
+        educations = Education.objects.filter(
+            institution__icontains=title_query
+        )
 
     educations_json = serializers.serialize("json", educations)
     return HttpResponse(educations_json, content_type="application/json")
@@ -115,16 +142,25 @@ def create_education(request):
     form = EducationForm(request.POST or None)
 
     if request.method == "POST" and form.is_valid():
+        secret = form.cleaned_data["secret"]
+
+        if secret != os.getenv("PORTFOLIO_SECRET"):
+            messages.error(request, "Secret code salah!")
+            return render(request, "education_form.html", {
+                "name": "Hafiza",
+                "form": form,
+            })
+
         form.save()
-        messages.success(request, "Pendidikan baru berhasil ditambahkan!")
+        messages.success(request, "Education baru berhasil ditambahkan!")
         return redirect("main:show_education")
 
     context = {
         "name": "Hafiza",
-        "form": form,
+        "form": form,  # ← INI
     }
-    return render(request, "education_form.html", context)
 
+    return render(request, "education_form.html", context)
 
 def create_experience(request):
     form = ExperienceForm(request.POST or None)

@@ -5,41 +5,32 @@
 {% endblock meta %}
 
 {% block content %}
-    <main>
-        <section class="experience-section">
-            <div class="container">
-                <h1>Add New Education</h1>
+<main>
+    <section class="experience-section">
+        <div class="container">
 
-                <form method="post"
-                      action="{% url 'main:create_education' %}"
-                      class="education-form">
+            <h1>Add New Education</h1>
 
-                    {% csrf_token %}
+            <form method="post"
+                  action="{% url 'main:create_education' %}"
+                  class="education-form">
 
-                    {% for field in form %}
-                        <div class="form-group">
-                            <label for="{{ field.id_for_label }}">
-                                {{ field.label }}
-                            </label>
+                {% csrf_token %}
 
-                            {{ field }}
+                {{ form.as_p }}
 
-                            {% for error in field.errors %}
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
+                <button type="submit" class="button">
+                    Tambah Education
+                </button>
 
-                    <button type="submit" class="button">
-                        Tambah Education
-                    </button>
+                <a href="{% url 'main:show_education' %}"
+                   class="button button-secondary">
+                    Batal
+                </a>
 
-                    <a href="{% url 'main:show_education' %}"
-                       class="button button-secondary">
-                        Batal
-                    </a>
-                </form>
-            </div>
-        </section>
-    </main>
+            </form>
+
+        </div>
+    </section>
+</main>
 {% endblock content %}
-```
