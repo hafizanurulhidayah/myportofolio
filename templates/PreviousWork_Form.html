@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block meta %}
+    <title>Add Previous Work - {{ name }}</title>
+{% endblock meta %}
+
+{% block content %}
+
+<main>
+    <section class="previous-work-form-section">
+        <div class="container">
+
+            <div class="previous-work-form-header">
+                <p class="section-kicker">Tambah pengalaman kerja/proyek</p>
+                <h1>Add Previous Work</h1>
+                <p>
+                    Tambahkan pekerjaan atau proyek yang pernah kamu kerjakan.
+                </p>
+            </div>
+
+            <form
+                method="post"
+                enctype="multipart/form-data"
+                class="previous-work-form"
+            >
+
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div class="form-error">
+                      {{ form.errors }}
+                     </div>
+                 {% endif %}
+
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">
+                        {{ form.title.label }}
+                    </label>
+                    {{ form.title }}
+                    {% for error in form.title.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.role.id_for_label }}">
+                        {{ form.role.label }}
+                    </label>
+                    {{ form.role }}
+                    {% for error in form.role.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">
+                        {{ form.description.label }}
+                    </label>
+                    {{ form.description }}
+                    {% for error in form.description.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.date.id_for_label }}">
+                        {{ form.date.label }}
+                    </label>
+                    {{ form.date }}
+                    {% for error in form.date.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.category.id_for_label }}">
+                        {{ form.category.label }}
+                    </label>
+                    {{ form.category }}
+                    {% for error in form.category.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.link.id_for_label }}">
+                        {{ form.link.label }}
+                    </label>
+                    {{ form.link }}
+                    {% for error in form.link.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.photo.id_for_label }}">
+                        {{ form.photo.label }}
+                    </label>
+                    {{ form.photo }}
+                    {% for error in form.photo.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.secret.id_for_label }}">
+                        {{ form.secret.label }}
+                    </label>
+
+                    {{ form.secret }}
+
+                    {% for error in form.secret.errors %}
+                        <small class="form-error">{{ error }}</small>
+                    {% endfor %}
+                </div>
+
+                {% if form.non_field_errors %}
+                    <div class="form-error">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-actions">
+                    <button type="submit" class="button">
+                        Simpan
+                    </button>
+
+                    <a
+                        href="{% url 'main:show_previous_work' %}"
+                        class="button button-secondary"
+                    >
+                        Batal
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </section>
+</main>
+
+{% endblock content %}

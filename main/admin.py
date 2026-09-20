@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Experience, ExperiencePhoto, Education
+from .models import Experience, ExperiencePhoto, Education, PreviousWork
 
 # Register your models here.
 class ExperiencePhotoInline(admin.TabularInline):
@@ -13,3 +13,4 @@ class ExperienceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Education)
+admin.site.register(PreviousWork)

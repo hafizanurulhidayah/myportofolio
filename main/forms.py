@@ -6,12 +6,14 @@ from django.forms import (
     DateTimeInput,
     PasswordInput,
     CharField,
+    URLInput,
+    ClearableFileInput,
 )
 
 from django import forms
 
 
-from main.models import Education, Experience
+from main.models import Education, Experience, PreviousWork
 
 
 class EducationForm(ModelForm):
@@ -69,15 +71,14 @@ class EducationForm(ModelForm):
 
 
 class ExperienceForm(ModelForm):
-    secret = CharField(
-        label="Secret Code",
-        widget=PasswordInput(
-            attrs={
-                "placeholder": "Masukkan secret code",
-                "class": "form-control",
-            }
-        )
+    secret = forms.CharField(
+        label="Security Code",
+        widget=forms.PasswordInput(attrs={
+            "placeholder": "Security Code"
+        }),
+        required=True,
     )
+
 
     class Meta:
         model = Experience
@@ -138,3 +139,77 @@ class ExperienceForm(ModelForm):
             }
         ),
     }
+
+class PreviousWorkForm(ModelForm):
+    secret = CharField(
+            label="Security Code",
+            widget=PasswordInput(
+                attrs={
+                    "placeholder": "Masukkan security code"
+                }
+            ),
+        )
+   
+    class Meta:
+        model = PreviousWork
+        fields = [
+            "title",
+            "role",
+            "description",
+            "date",
+            "category",
+            "link",
+            "photo",
+        ]
+
+        labels = {
+            "title": "Nama Proyek",
+            "role": "Posisi dalam proyek",
+            "description": "Deskripsi role / proyek",
+            "date": "Dikerjakan pada",
+            "category": "Kategori proyek (ex : Website, MC Event, Etc)",
+            "link": "Tautan untuk detail proyek",
+            "photo": "Dokumentasi selama proyek" 
+        }
+
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Website Wali",
+                    "maxlength": 100,
+                }
+            ),
+            "role": TextInput(
+                attrs={
+                    "placeholder": "Project Manager",
+                    "maxlength": 100,
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Ceritakan pekerjaan dan kontribusimu dalam proyek ini",
+                    "rows": 4,
+                }
+            ),
+            "date": DateTimeInput(
+                attrs={
+                    "type": "date",
+                }
+            ),
+            "category": TextInput(
+                attrs={
+                    "placeholder": "Website, MC Event, Organization",
+                    "maxlength": 50,
+                }
+            ),
+            "link": URLInput(
+                attrs={
+                    "placeholder": "https://github.com/username/project",
+                }
+            ),
+            "photo": ClearableFileInput(
+                attrs={
+                    "accept": "image/*",
+                }
+            ),
+        }

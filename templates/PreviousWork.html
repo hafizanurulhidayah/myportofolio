@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block meta %}
+    <title>Previous Work - {{ name }}</title>
+{% endblock meta %}
+
+{% block content %}
+
+<main>
+    <section class="previous-work-section" id="previous-work">
+        <div class="container">
+
+            <p class="section-kicker">
+                Beberapa pekerjaan yang telah saya jalankan sejauh ini
+            </p>
+
+            <div class="previous-work-header">
+                <h1>Previous Work</h1>
+
+                <a href="{% url 'main:create_previous_work' %}"
+                   class="button previous-work-add-button">
+                    <span aria-hidden="true">+</span>
+                    Tambah Previous Work
+                </a>
+            </div>
+
+            <div class="previous-work-list">
+
+                {% for previous_work in previous_work_list %}
+
+                    <article class="previous-work-card">
+
+                        {% if previous_work.photo %}
+                            <img
+                                src="{{ previous_work.photo.url }}"
+                                alt="Dokumentasi {{ previous_work.title }}"
+                                class="previous-work-image"
+                            >
+                        {% endif %}
+
+                        <div class="previous-work-content">
+
+                            <span class="previous-work-category">
+                                {{ previous_work.category }}
+                            </span>
+
+                            <h2>{{ previous_work.title }}</h2>
+
+                            <p class="previous-work-role">
+                                {{ previous_work.role }}
+                            </p>
+
+                            <p class="previous-work-description">
+                                {{ previous_work.description }}
+                            </p>
+
+                            <p class="previous-work-date">
+                                {{ previous_work.date }}
+                            </p>
+
+                            <div class="previous-work-actions">
+
+                                {% if previous_work.link %}
+                                    <a
+                                        href="{{ previous_work.link }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="button"
+                                    >
+                                        Lihat Detail
+                                    </a>
+                                {% endif %}
+
+                                {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% empty %}
+
+                    <p class="empty-state">
+                        Belum ada previous work yang ditambahkan.
+                    </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+    </section>
+</main>
+
+{% endblock content %}

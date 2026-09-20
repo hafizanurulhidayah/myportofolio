@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.utils import timezone
 from datetime import datetime
 
-from main.models import Experience, Education
+from main.models import Experience, Education, PreviousWork
 
 
 class MainTest(TestCase):
@@ -47,7 +47,7 @@ class MainTest(TestCase):
         Experience.objects.all().delete()
         response = self.client.get(reverse("main:show_experience"))
 
-        self.assertContains(response, "Belum ada pengalaman yang ditambahkan.")
+        self.assertContains(response, "Belum ada experience yang ditambahkan.")
 
     def test_completed_experience(self):
         self.experience.ended_at = timezone.now()
@@ -58,28 +58,55 @@ class MainTest(TestCase):
         self.assertContains(response, "Selesai")
         self.assertNotContains(response, "Sedang berlangsung")
 
-class EducationTest(TestCase):
-    def test_education_url_and_template(self):
-        response = self.client.get(reverse("main:show_education"))
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "education.html")
-    def test_education_data_appears_on_page(self):
-        education = Education.objects.create(
-            institution="Universitas Indonesia",
-            degree="Computer Science",
-            year="2025 - Present",
-            achievements="Semi Finalist Hackathon IYREF",
+class PreviousWorkTest(TestCase):
+    def test_previous_work_url_and_template(self):
+        response = self.client.get(
+            reverse("main:show_previous_work")
         )
 
-        response = self.client.get(reverse("main:show_education"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            "PreviousWork.html"
+        )
 
-        self.assertContains(response, education.institution)
-        self.assertContains(response, education.degree)
-        self.assertContains(response, education.year)
-        self.assertContains(response, education.achievements)
+    def test_previous_work_data_appears_on_page(self):
+        previous_work = PreviousWork.objects.create(
+            title="Website Wali",
+            role="Project Manager",
+            description="Mengelola pengembangan website Wali.",
+            date="2026-04-01",
+            category="Web Development",
+            link="https://example.com",
+        )
 
-    def test_empty_education_page(self):
-        response = self.client.get(reverse("main:show_education"))
+        response = self.client.get(
+            reverse("main:show_previous_work")
+        )
 
-        self.assertContains(response, "Belum ada informasi pendidikan yang ditambahkan.")
+        self.assertContains(
+            response,
+            previous_work.title
+        )
+        self.assertContains(
+            response,
+            previous_work.role
+        )
+        self.assertContains(
+            response,
+            previous_work.description
+        )
+        self.assertContains(
+            response,
+            previous_work.category
+        )
+
+    def test_empty_previous_work_page(self):
+        response = self.client.get(
+            reverse("main:show_previous_work")
+        )
+
+        self.assertContains(
+            response,
+            "Belum ada previous work yang ditambahkan."
+        )

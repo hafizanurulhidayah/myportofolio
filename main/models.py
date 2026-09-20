@@ -40,3 +40,18 @@ class Education(models.Model):
     year = models.CharField(max_length=20)
     achievements = models.TextField()
 
+class PreviousWork(models.Model):
+    title = models.CharField(max_length=100)
+    role = models.CharField(max_length=100)
+    description = models.TextField()
+    date = models.DateField()
+    category = models.CharField(max_length=50)
+    link = models.URLField(blank=True)
+    photo = models.ImageField(
+        upload_to="project_photos/",
+        blank=True,
+        null=True
+    )
+
+
+
