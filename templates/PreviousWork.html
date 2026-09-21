@@ -77,20 +77,27 @@
 
                             <div class="previous-work-actions">
 
-                                {% if previous_work.link %}
-                                    <a
-                                        href="{{ previous_work.link }}"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="button"
-                                    >
-                                        Lihat Detail
-                                    </a>
-                                {% endif %}
+                            {% if previous_work.link %}
+                                <a
+                                    href="{{ previous_work.link }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="button button-detail"
+                                >
+                                    Lihat Detail
+                                </a>
+                            {% endif %}
 
-                                {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
+                            <a
+                                href="{% url 'main:update_previous_work' previous_work.id %}"
+                                class="button  button-edit"
+                            >
+                                Edit
+                            </a>
 
-                            </div>
+                            {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
+
+                        </div>
 
                         </div>
 

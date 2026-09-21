@@ -41,55 +41,62 @@
 
             <div class="education-grid">
 
-                    {% for education in education_list %}
+                {% for education in education_list %}
 
-                        <div class="education-card">
+                    <div class="education-card">
 
-                            <h2>{{ education.institution }}</h2>=
-                            <p>{{ education.degree }}</p>
-                            <p>{{ education.year }}</p>
-                            <div class="education-achievements">
-                                <h3>Achievements</h3>
+                        <h2>{{ education.institution }}</h2>
+                        <p>{{ education.degree }}</p>
+                        <p>{{ education.year }}</p>
 
-                                <ul>
-                                    {% for achievement in education.achievements_list %}
-                                        <li>{{ achievement }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="education-card-actions">
-                                <div class="education-actions">
+                        <div class="education-achievements">
+                            <h3>Achievements</h3>
 
-                                    {% if education.education_url %}
-                                        <a href="{{ education.education_url }}"
-                                        class="button">
-                                            Lihat Education Background
-                                        </a>
-                                    {% endif %}
+                            <ul>
+                                {% for achievement in education.achievements_list %}
+                                    <li>{{ achievement }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-                                    {% include "components/education_delete_modal.html" with education=education %}
+                        <div class="education-card-actions">
+                            <div class="education-actions">
 
-                                </div>
+                                {% if education.education_url %}
+                                    <a href="{{ education.education_url }}"
+                                       class="button">
+                                        Lihat Education Background
+                                    </a>
+                                {% endif %}
+
+                                <a href="{% url 'main:update_education' education.id %}"
+                                   class="button button-edit">
+                                    Edit
+                                </a>
+
+                                {% include "components/education_delete_modal.html" with education=education %}
+
                             </div>
                         </div>
 
-                    {% empty %}
+                    </div>  
 
-                        {% if title_query %}
-                            <p class="empty-state">
-                                Tidak ada education background dengan nama tersebut.
-                            </p>
-                        {% else %}
-                            <p class="empty-state">
-                                Belum ada education background yang ditambahkan.
-                            </p>
-                        {% endif %}
+                {% empty %}
 
-                    {% endfor %}
+                    {% if title_query %}
+                        <p class="empty-state">
+                            Tidak ada education background dengan nama tersebut.
+                        </p>
+                    {% else %}
+                        <p class="empty-state">
+                            Belum ada education background yang ditambahkan.
+                        </p>
+                    {% endif %}
 
-                </div>
+                {% endfor %}
+
+            </div>
         </div>
     </section>
 </main>
 {% endblock content %}
-

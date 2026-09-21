@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block meta %}
-    <title>Add Previous Work - {{ name }}</title>
+    <title>{{ page_title }} - {{ name }}</title>
 {% endblock meta %}
 
 {% block content %}
@@ -11,8 +11,12 @@
         <div class="container">
 
             <div class="previous-work-form-header">
-                <p class="section-kicker">Tambah pengalaman kerja/proyek</p>
-                <h1>Add Previous Work</h1>
+                <p class="section-kicker">
+                    Tambah pengalaman kerja/proyek
+                </p>
+
+                <h1>{{ page_title }}</h1>
+
                 <p>
                     Tambahkan pekerjaan atau proyek yang pernah kamu kerjakan.
                 </p>
@@ -20,6 +24,11 @@
 
             <form
                 method="post"
+                {% if page_title == "Edit Previous Work" %}
+                    action="{% url 'main:update_previous_work' previous_work.id %}"
+                {% else %}
+                    action="{% url 'main:create_previous_work' %}"
+                {% endif %}
                 enctype="multipart/form-data"
                 class="previous-work-form"
             >
@@ -28,15 +37,17 @@
 
                 {% if form.errors %}
                     <div class="form-error">
-                      {{ form.errors }}
-                     </div>
-                 {% endif %}
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
 
                 <div class="form-group">
                     <label for="{{ form.title.id_for_label }}">
                         {{ form.title.label }}
                     </label>
+
                     {{ form.title }}
+
                     {% for error in form.title.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -46,7 +57,9 @@
                     <label for="{{ form.role.id_for_label }}">
                         {{ form.role.label }}
                     </label>
+
                     {{ form.role }}
+
                     {% for error in form.role.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -56,7 +69,9 @@
                     <label for="{{ form.description.id_for_label }}">
                         {{ form.description.label }}
                     </label>
+
                     {{ form.description }}
+
                     {% for error in form.description.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -66,7 +81,9 @@
                     <label for="{{ form.date.id_for_label }}">
                         {{ form.date.label }}
                     </label>
+
                     {{ form.date }}
+
                     {% for error in form.date.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -76,7 +93,9 @@
                     <label for="{{ form.category.id_for_label }}">
                         {{ form.category.label }}
                     </label>
+
                     {{ form.category }}
+
                     {% for error in form.category.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -86,7 +105,9 @@
                     <label for="{{ form.link.id_for_label }}">
                         {{ form.link.label }}
                     </label>
+
                     {{ form.link }}
+
                     {% for error in form.link.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -96,7 +117,9 @@
                     <label for="{{ form.photo.id_for_label }}">
                         {{ form.photo.label }}
                     </label>
+
                     {{ form.photo }}
+
                     {% for error in form.photo.errors %}
                         <small class="form-error">{{ error }}</small>
                     {% endfor %}
@@ -121,8 +144,9 @@
                 {% endif %}
 
                 <div class="form-actions">
+
                     <button type="submit" class="button">
-                        Simpan
+                        {{ button_text }}
                     </button>
 
                     <a
@@ -131,6 +155,7 @@
                     >
                         Batal
                     </a>
+
                 </div>
 
             </form>

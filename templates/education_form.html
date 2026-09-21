@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block meta %}
-    <title>Add Education - {{ name }}</title>
+    <title>{{ page_title }} - {{ name }}</title>
 {% endblock meta %}
 
 {% block content %}
@@ -9,10 +9,14 @@
     <section class="experience-section">
         <div class="container">
 
-            <h1>Add New Education</h1>
+            <h1>{{ page_title }}</h1>
 
             <form method="post"
-                  action="{% url 'main:create_education' %}"
+                  {% if page_title == "Edit Education" %}
+                      action="{% url 'main:update_education' education.id %}"
+                  {% else %}
+                      action="{% url 'main:create_education' %}"
+                  {% endif %}
                   class="education-form">
 
                 {% csrf_token %}
@@ -20,7 +24,7 @@
                 {{ form.as_p }}
 
                 <button type="submit" class="button">
-                    Tambah Education
+                    {{ button_text }}
                 </button>
 
                 <a href="{% url 'main:show_education' %}"
