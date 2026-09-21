@@ -1,5 +1,6 @@
 from django.urls import path
 
+
 from main.views import (
     show_main,
     show_experience,
@@ -14,6 +15,7 @@ from main.views import (
     create_previous_work,
     get_previous_work_json,
     delete_previous_work,
+    update_experience,
 )
 
 app_name = "main"
@@ -31,4 +33,5 @@ urlpatterns = [
     path("experience/delete/<uuid:experience_id>/",delete_experience,name="delete_experience",),
     path("education/delete/<int:education_id>/",delete_education,name="delete_education",),
     path("PreviousWork/delete/<int:previous_work_id>/",delete_previous_work,name="delete_previous_work",),
+    path("experience/edit/<uuid:experience_id>/", update_experience,name="update_experience",),
 ]

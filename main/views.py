@@ -281,24 +281,76 @@ def create_previous_work(request):
 
 
 def create_experience(request):
-    form = ExperienceForm(request.POST or None)
+    form = ExperienceForm(request.POST or None, request.FILES or None)
 
     if request.method == "POST" and form.is_valid():
         secret = form.cleaned_data["secret"]
 
         if secret != os.getenv("PORTFOLIO_SECRET"):
             messages.error(request, "Secret code salah!")
-            return render(request, "experience_form.html", {
-                "name": "Hafiza",
-                "form": form,
-            })
+            return render(
+                request,
+                "experience_form.html",
+                {
+                    "name": "Hafiza",
+                    "form": form,
+                    "page_title": "Add New Experience",
+                    "button_text": "Tambah Experience",
+                }
+            )
 
         form.save()
-        messages.success(request, "Experience baru berhasil ditambahkan!")
+        messages.success(
+            request,
+            "Experience baru berhasil ditambahkan!"
+        )
         return redirect("main:show_experience")
 
-    context = {
-        "name": "Hafiza",
-        "form": form,
-    }
-    return render(request, "experience_form.html", context)
+    return render(
+        request,
+        "experience_form.html",
+        {
+            "name": "Hafiza",
+            "form": form,
+            "page_title": "Add New Experience",
+            "button_text": "Tambah Experience",
+        }
+    )
+
+# update 
+def update_experience(request, experience_id):
+    experience = get_object_or_404(
+        Experience,
+        id=experience_id
+    )
+
+    if request.method == "POST":
+        form = ExperienceForm(
+            request.POST,
+            request.FILES,
+            instance=experience
+        )
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                "Experience berhasil diperbarui!"
+            )
+            return redirect("main:show_experience")
+    else:
+        form = ExperienceForm(instance=experience)
+
+    return render(
+        request,
+        "experience_form.html",
+        {
+            "name": "Hafiza",
+            "form": form,
+            "page_title": "Edit Experience",
+            "button_text": "Simpan Perubahan",
+            "experience": experience,
+        }
+    )
+    
+
