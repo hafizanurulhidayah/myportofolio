@@ -16,6 +16,8 @@ from main.views import (
     get_previous_work_json,
     delete_previous_work,
     update_experience,
+    update_education,
+    update_previous_work,
 )
 
 app_name = "main"
@@ -34,4 +36,6 @@ urlpatterns = [
     path("education/delete/<int:education_id>/",delete_education,name="delete_education",),
     path("PreviousWork/delete/<int:previous_work_id>/",delete_previous_work,name="delete_previous_work",),
     path("experience/edit/<uuid:experience_id>/", update_experience,name="update_experience",),
+    path("education/edit/<int:education_id>/",update_education, name="update_education",),
+    path("previous-work/edit/<int:previous_work_id>/",update_previous_work,name="update_previous_work",),
 ]

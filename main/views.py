@@ -217,21 +217,34 @@ def create_education(request):
 
         if secret != os.getenv("PORTFOLIO_SECRET"):
             messages.error(request, "Secret code salah!")
-            return render(request, "education_form.html", {
-                "name": "Hafiza",
-                "form": form,
-            })
+            return render(
+                request,
+                "education_form.html",
+                {
+                    "name": "Hafiza",
+                    "form": form,
+                    "page_title": "Add New Education",
+                    "button_text": "Tambah Education",
+                }
+            )
 
         form.save()
-        messages.success(request, "Education baru berhasil ditambahkan!")
+        messages.success(
+            request,
+            "Education baru berhasil ditambahkan!"
+        )
         return redirect("main:show_education")
 
-    context = {
-        "name": "Hafiza",
-        "form": form,  # ← INI
-    }
-
-    return render(request, "education_form.html", context)
+    return render(
+        request,
+        "education_form.html",
+        {
+            "name": "Hafiza",
+            "form": form,
+            "page_title": "Add New Education",
+            "button_text": "Tambah Education",
+        }
+    )
 
 def create_previous_work(request):
     form = PreviousWorkForm(
@@ -250,12 +263,15 @@ def create_previous_work(request):
                     request,
                     "Security Code salah!"
                 )
+
                 return render(
                     request,
                     "PreviousWork_form.html",
                     {
                         "name": "Hafiza Nurul Hidayah",
                         "form": form,
+                        "page_title": "Add Previous Work",
+                        "button_text": "Simpan",
                     }
                 )
 
@@ -268,16 +284,17 @@ def create_previous_work(request):
 
             return redirect("main:show_previous_work")
 
-    context = {
-        "name": "Hafiza Nurul Hidayah",
-        "form": form,
-    }
-
     return render(
         request,
         "PreviousWork_form.html",
-        context
+        {
+            "name": "Hafiza Nurul Hidayah",
+            "form": form,
+            "page_title": "Add Previous Work",
+            "button_text": "Simpan",
+        }
     )
+
 
 
 def create_experience(request):
@@ -352,5 +369,120 @@ def update_experience(request, experience_id):
             "experience": experience,
         }
     )
-    
 
+def update_education(request, education_id):
+    education = get_object_or_404(
+        Education,
+        id=education_id
+    )
+
+    if request.method == "POST":
+        form = EducationForm(
+            request.POST,
+            instance=education
+        )
+
+        if form.is_valid():
+            secret = form.cleaned_data["secret"]
+
+            if secret != os.getenv("PORTFOLIO_SECRET"):
+                messages.error(request, "Secret code salah!")
+
+                return render(
+                    request,
+                    "education_form.html",
+                    {
+                        "name": "Hafiza",
+                        "form": form,
+                        "page_title": "Edit Education",
+                        "button_text": "Simpan Perubahan",
+                        "education": education,
+                    }
+                )
+
+            form.save()
+
+            messages.success(
+                request,
+                "Education berhasil diperbarui!"
+            )
+
+            return redirect("main:show_education")
+
+    else:
+        form = EducationForm(
+            instance=education
+        )
+
+    return render(
+        request,
+        "education_form.html",
+        {
+            "name": "Hafiza",
+            "form": form,
+            "page_title": "Edit Education",
+            "button_text": "Simpan Perubahan",
+            "education": education,
+        }
+    )
+
+def update_previous_work(request, previous_work_id):
+    previous_work = get_object_or_404(
+        PreviousWork,
+        pk=previous_work_id
+    )
+
+    if request.method == "POST":
+        form = PreviousWorkForm(
+            request.POST,
+            request.FILES,
+            instance=previous_work
+        )
+
+        if form.is_valid():
+            secret = form.cleaned_data["secret"]
+            env_secret = os.getenv("PORTFOLIO_SECRET")
+
+            if secret != env_secret:
+                messages.error(
+                    request,
+                    "Security Code salah!"
+                )
+
+                return render(
+                    request,
+                    "PreviousWork_form.html",
+                    {
+                        "name": "Hafiza Nurul Hidayah",
+                        "form": form,
+                        "page_title": "Edit Previous Work",
+                        "button_text": "Simpan Perubahan",
+                        "previous_work": previous_work,
+                    }
+                )
+
+            form.save()
+
+            messages.success(
+                request,
+                "Previous Work berhasil diperbarui!"
+            )
+
+            return redirect("main:show_previous_work")
+
+    else:
+        form = PreviousWorkForm(
+            instance=previous_work
+        )
+
+    return render(
+        request,
+        "PreviousWork_form.html",
+        {
+            "name": "Hafiza Nurul Hidayah",
+            "form": form,
+            "page_title": "Edit Previous Work",
+            "button_text": "Simpan Perubahan",
+            "previous_work": previous_work,
+        }
+    )
