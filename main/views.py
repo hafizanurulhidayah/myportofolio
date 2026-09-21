@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.core import serializers
 import os
@@ -59,14 +60,23 @@ def show_experience(request):
 
     return render(request, "experience.html", context)
 
-# ini blm gw ubah ya 
-
 def show_previous_work(request):
+    search_query = request.GET.get("search", "").strip()
+
     previous_work_list = PreviousWork.objects.all()
+
+    if search_query:
+        previous_work_list = previous_work_list.filter(
+            Q(title__icontains=search_query)
+            | Q(role__icontains=search_query)
+            | Q(category__icontains=search_query)
+            | Q(description__icontains=search_query)
+        )
 
     context = {
         "name": "Hafiza Nurul Hidayah",
         "previous_work_list": previous_work_list,
+        "search_query": search_query,
     }
 
     return render(
@@ -76,17 +86,27 @@ def show_previous_work(request):
     )
 
 
-def show_educations(request):
+def show_education(request):
+    title_query = request.GET.get("title", "").strip()
+
     education_list = Education.objects.all()
+
+    if title_query:
+        education_list = education_list.filter(
+            institution__icontains=title_query
+        )
+
+    for education in education_list:
+        education.achievements_list = education.achievements.splitlines()
+
 
     context = {
         "name": "Hafiza Nurul Hidayah",
         "education_list": education_list,
-        "title_query": request.GET.get("title", "").strip(),
+        "title_query": title_query,
     }
 
     return render(request, "education.html", context)
-
 
 def delete_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)

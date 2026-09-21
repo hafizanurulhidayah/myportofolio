@@ -45,11 +45,18 @@
 
                         <div class="education-card">
 
-                            <h2>{{ education.institution }}</h2>
+                            <h2>{{ education.institution }}</h2>=
                             <p>{{ education.degree }}</p>
                             <p>{{ education.year }}</p>
-                            <p>{{ education.achievements }}</p>
+                            <div class="education-achievements">
+                                <h3>Achievements</h3>
 
+                                <ul>
+                                    {% for achievement in education.achievements_list %}
+                                        <li>{{ achievement }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                             <div class="education-card-actions">
                                 <div class="education-actions">
 

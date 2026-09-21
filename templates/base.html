@@ -29,6 +29,16 @@
   </header>
   {% block content %} {% endblock content %}
 
+  {% if messages %}
+    <div class="toast-container">
+        {% for message in messages %}
+            <div class="toast toast-{{ message.tags }}">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
   <footer class="site-footer">
       <div class="container">
           <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
