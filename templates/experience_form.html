@@ -1,40 +1,43 @@
 {% extends "base.html" %}
 
-{% block meta %}
-    <title>{{ page_title }} - {{ name }}</title>
+{% block meta %} <title>{{ page_title }} - {{ name }}</title>
 {% endblock meta %}
 
 {% block content %}
+
 <main>
     <section class="experience-section">
         <div class="container">
 
-            <h1>{{ page_title }}</h1>
+```
+        <h1>{{ page_title }}</h1>
 
-            <form method="post"
-                  {% if page_title == "Edit Education" %}
-                      action="{% url 'main:update_education' education.id %}"
-                  {% else %}
-                      action="{% url 'main:create_education' %}"
-                  {% endif %}
-                  class="education-form">
+        <form method="post"
+              {% if page_title == "Edit Experience" %}
+                  action="{% url 'main:update_experience' experience.id %}"
+              {% else %}
+                  action="{% url 'main:create_experience' %}"
+              {% endif %}
+              class="experience-form">
 
-                {% csrf_token %}
+            {% csrf_token %}
 
-                {{ form.as_p }}
+            {{ form.as_p }}
 
-                <button type="submit" class="button">
-                    {{ button_text }}
-                </button>
+            <button type="submit" class="button">
+                {{ button_text }}
+            </button>
 
-                <a href="{% url 'main:show_education' %}"
-                   class="button button-secondary">
-                    Batal
-                </a>
+            <a href="{% url 'main:show_experience' %}"
+               class="button button-secondary">
+                Batal
+            </a>
 
-            </form>
+        </form>
 
-        </div>
-    </section>
+    </div>
+</section>
+```
+
 </main>
 {% endblock content %}
