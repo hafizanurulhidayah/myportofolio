@@ -15,12 +15,14 @@
 
             <div class="education-header">
                 <h1>Education</h1>
-
+                
+                {% if user.is_superuser %} 
                 <a href="{% url 'main:create_education' %}"
                    class="button education-add-button">
                     <span aria-hidden="true">+</span>
                     Tambah Education Background
                 </a>
+                {% endif %}    
             </div>
 
             <form method="get"
@@ -73,9 +75,9 @@
                                    class="button button-edit">
                                     Edit
                                 </a>
-
-                                {% include "components/education_delete_modal.html" with education=education %}
-
+                                {% if user.is_superuser %} 
+                                    {% include "components/education_delete_modal.html" with education=education %}
+                                {% endif %}   
                             </div>
                         </div>
 

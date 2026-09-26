@@ -17,11 +17,13 @@
             <div class="previous-work-header">
                 <h1>Previous Work</h1>
 
+                {% if user.is_superuser %} 
                 <a href="{% url 'main:create_previous_work' %}"
                    class="button previous-work-add-button">
                     <span aria-hidden="true">+</span>
                     Tambah Previous Work
                 </a>
+                {% endif %}  
             </div>
 
             <div class="previous-work-search">
@@ -94,9 +96,9 @@
                             >
                                 Edit
                             </a>
-
-                            {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
-
+                            {% if user.is_superuser %}  
+                                {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
+                            {% endif %}  
                         </div>
 
                         </div>
