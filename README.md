@@ -54,6 +54,8 @@ python manage.py test
 
 ## Refleksi AI
 
+AI yang saya gunakan : ChatGpt, Gemini, Claude
+
 Dalam proses pengerjaan tugas ini, saya menggunakan AI sebagai alat bantu untuk memahami konsep dan memeriksa pemahaman saya terhadap beberapa soal. Tapi, saya tetap mencoba untuk mempelajari dan memahami kembali langkah penyelesaian dan konsep yang digunakan agar dapat memahami kode kode yang ada pada file.
 
 Strategi prompting yang saya gunakan adalah mencoba untuk menanyakan beberapa hal yang saya belum tau bagaimana eksekusinya dengan menyertakan referensi atau potongan kode, setelah mendapat penjelasan saya mencoba memahami sendiri dan menanyakan kembali apabila ada yang masih tidak paham. 
@@ -61,6 +63,10 @@ Strategi prompting yang saya gunakan adalah mencoba untuk menanyakan beberapa ha
 Saya menggunakan AI untuk membantu dalam mengatur layout, spacing, ukuran, serta menyesuaikan tampilan website agar lebih responsif pada ukuran desktop dan mobile. Bagian yang paling banyak dibantu AI adalah CSS, terutama ketika saya mengalami kesulitan dalam menentukan penyesuaian layout pada desktop dan mobile. Sementara itu, saya tetap menentukan sendiri struktur HTML, konten website, konsep tampilan, serta membuat wireframe sebagai dasar rancangan website. Selain itu, saya juga meminta bantuan AI untuk menulis commit message yang sekiranya cukup sesuai dengan isi yang saya punya.
 
 Saya juga menggunakan AI untuk memberikan saya penjelasan mengenai instruksi instruksi dan fitur yang ada di django, terkadang saya bingung harus melakukan apa di terminal atau bagaimana caranya melakukan suatu hal tanpa dimasukkan di terminal (contohnya ketika saya ingin menambahkan data untuk education and experience), saya memutuskan untuk nanya ke AI dan juga mencari referensi di internet.
+
+Pada Tugas 4, saya menggunakan AI chatgpt untuk mengimplementasikan authentication, authorization, role Editor, dan fitur Star pada website portfolio saya. Saya cukup sering menggunakan AI untuk memahami konsep yang masih membingungkan, mencari penyebab error, dan mengecek apakah implementasi saya sudah sesuai dengan requirement tugas. Salah satu hal yang paling membantu adalah ketika saya mempelajari perbedaan hak akses antara User, Editor, dan Superuser. 
+
+Saya juga menggunakan AI untuk membantu melakukan debugging pada beberapa bagian Django seperti `login_required`, `PermissionDenied`, Django Group dan Permission, serta penggunaan `ManyToManyField` untuk fitur Star. Namun, setiap solusi tetap saya sesuaikan dengan struktur project saya dan saya uji kembali secara langsung. Dari pengerjaan ini juga, Terkadang solusi yang diberikan AI tidak langsung cocok dengan project saya, sehingga saya harus membaca kembali kode, mencoba sendiri, dan melakukan debugging. 
 
 ### Tugas 1
 1. Pada kode html yang saya buat saya menggunakan beberapa element yang telah disebutkan di website PBP CS UI, seperti <header> yang saya gunakan untuk bagian judul di website, ;lalu <main> juga saya gunakan untuk highlight main topic / main focus pada halama tersebut, saya juga menggunakan <section> untuk membagi halaman jd bbrp bagian berbeda
@@ -85,3 +91,77 @@ Pada tugas 3 ini saya menambahkan education_form, experience_form, dan previous_
 2. JSON memiliki struktur dan sintaks yang lebih ringkas dan juga sederhana sehingga ukuran data yang dikirim dapat lebih kecil. JSON juga sangat cocok digunakan untuk komunikasi antara frontend dan backend melalui API, serta dapat langsung direpresentasikan sebagai object/data structure dalam banyak bahasa pemrograman.
 
 3. Client -> request url -> view django -> ambil data dr model (contoh : data = PreviousWork.objects.all()) -> serialization (contoh : serializers.serialize("json", data)) -> data menjadi json -> jsonresponse -> client menerima json (contoh : content_type="application/json").
+
+### Tugas 4 
+Pada Tugas 4, portfolio dikembangkan dengan menerapkan sistem autentikasi dan otorisasi menggunakan Django. Pengguna dapat melakukan registrasi, login, dan logout, serta memiliki hak akses yang berbeda berdasarkan perannya. Selain itu, ditambahkan fitur interaktif berupa star pada data portfolio dan peran baru yaitu editor.
+
+## Fitur yang ditambahkan pada tugas 4 ini
+
+### 1. Authentication
+Sistem menyediakan fitur:
+- Register
+- Login
+- Logout
+- Menampilkan status login
+- Menyimpan informasi `last_login` menggunakan cookie
+
+### 2. Profile
+Ditambahkan halaman **Profile** yang menampilkan informasi akun pengguna yang sedang digunakan.
+Halaman Profile menampilkan:
+- Username
+- Role pengguna
+- Total data portfolio yang di-star
+- Daftar Experience yang di-star
+- Daftar Education yang di-star
+- Daftar Previous Work yang di-star
+Profile dapat digunakan untuk melihat aktivitas Star yang dilakukan oleh masing-masing pengguna.
+
+### 3. Role & Authorization
+Terdapat 4 jenis akses pengguna:
+
+| Role | Read | Star | Create | Update | Delete |
+|------|------|------|--------|--------|--------|
+| Visitor | ✅ | ❌ | ❌ | ❌ | ❌ |
+| User | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Editor | ✅ | ✅ | ❌ | ✅ | ❌ |
+| Superuser / Owner | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+Pembatasan akses diterapkan pada **server-side** menggunakan Django authentication dan permission.
+Role **Editor** menggunakan Django `Group` dan `Permission`, dengan permission `change` untuk data portfolio.
+
+### 4. Star Feature
+Pengguna yang sudah login dapat memberikan atau membatalkan Star pada:
+- Experience
+- Education
+- Previous Work
+Fitur Star menggunakan `ManyToManyField` dengan model `User`.
+Setiap pengguna hanya dapat memberikan maksimal satu Star pada satu data. Jumlah Star dan status Star pengguna juga ditampilkan pada halaman portfolio.
+
+Aksi Star menggunakan:
+- HTTP POST
+- CSRF protection
+- `login_required`
+
+### 5. Portfolio Data
+Portfolio memiliki beberapa bagian:
+- Profile
+- Experience
+- Education
+- Previous Work
+
+Pengunjung tetap dapat membaca data portfolio tanpa harus login.
+
+### 6. JSON API
+Endpoint JSON dari tugas sebelumnya tetap dipertahankan untuk:
+- Experience
+- Education
+- Previous Work
+Data JSON dapat digunakan untuk mengakses data portfolio tanpa mengubah data tersebut.
+
+## Authorization
+Pembatasan akses diterapkan pada dua sisi:
+
+### Server-side
+View menggunakan:
+```python
+@login_required
