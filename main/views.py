@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.core import serializers
 from django.contrib.auth import login, logout 
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required  
 from django.core.exceptions import PermissionDenied       
@@ -60,6 +61,38 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
+def show_profile(request, username):
+    profile_user = get_object_or_404(User,username=username)
+
+    starred_experiences = profile_user.starred_experience.all()
+    starred_educations = profile_user.starred_education.all()
+    starred_previousworks = profile_user.starred_previouswork.all()
+
+    if profile_user.is_superuser:
+        role = "Owner"
+    elif profile_user.groups.filter(name="Editor").exists():
+        role = "Editor"
+    else:
+        role = "User"
+
+    total_starred = (
+        starred_experiences.count()
+        + starred_educations.count()
+        + starred_previousworks.count()
+    )
+
+    return render(
+        request,
+        "profile.html",
+        {
+            "profile_user": profile_user,
+            "role": role,
+            "starred_experiences": starred_experiences,
+            "starred_educations": starred_educations,
+            "starred_previousworks": starred_previousworks,
+            "total_starred": total_starred,
+        }
+    )
 
 @login_required(login_url="/login/")
 def toggle_star_experience(request, experience_id):

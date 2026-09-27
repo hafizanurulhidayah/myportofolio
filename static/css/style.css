@@ -2226,3 +2226,495 @@ a{ color: inherit; text-decoration: none; }
     box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
     transform: translateY(-2px);
 }
+
+/* STAR FORM */
+.star-form {
+    display: inline;
+}
+
+.button-star {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--green-dark);
+}
+
+.button-star.is-starred {
+    background: var(--pink);
+}
+
+.star-count {
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.25);
+    font-size: 0.8rem;
+}
+
+/* ROLE BADGE */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.role-owner {
+    background: #f5d77a;
+    color: #5c4500;
+}
+
+.role-editor {
+    background: #d8eadf;
+    color: #1e5b3a;
+}
+
+.role-user {
+    background: #eee;
+    color: #555;
+}
+
+/* =========================================
+   PROFILE PAGE
+   ========================================= */
+
+.profile-section {
+    padding: 80px 0 100px;
+}
+
+/* =========================================
+   PROFILE HEADER
+   ========================================= */
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+
+    max-width: 900px;
+    margin: 0 auto;
+
+    padding: 42px;
+
+    background: #fffaf7;
+    border: 1px solid rgba(30, 91, 58, 0.12);
+    border-radius: 28px;
+
+    box-shadow: 0 12px 35px rgba(30, 91, 58, 0.08);
+}
+
+.profile-avatar {
+    width: 200px;
+    height: 200px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #1E5B3A;
+    color: #F5E8E2;
+
+    font-size: 48px;
+    font-weight: 700;
+
+    border: 6px solid #F35F9B;
+}
+
+.profile-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.profile-info .section-kicker {
+    margin: 0 0 4px;
+
+    color: #F35F9B;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.profile-info h1 {
+    margin: 0;
+
+    color: #1E5B3A;
+
+    font-size: clamp(32px, 5vw, 52px);
+    line-height: 1;
+}
+
+.profile-username {
+    margin: 2px 0 16px;
+
+    color: #756b65;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   ROLE
+   ========================================= */
+
+.profile-role {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 10px 22px;
+
+    border-radius: 999px;
+
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.profile-role-owner {
+    background: #F35F9B;
+    color: white;
+}
+
+.profile-role-editor {
+    background: #1E5B3A;
+    color: white;
+}
+
+.profile-role-user {
+    background: #EDE3DE;
+    color: #5f5550;
+}
+
+
+/* =========================================
+   STATISTICS
+   ========================================= */
+
+.profile-summary {
+    max-width: 900px;
+    margin: 22px auto 70px;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    background: #fffaf7;
+
+    border: 1px solid rgba(30, 91, 58, 0.12);
+    border-radius: 22px;
+
+    overflow: hidden;
+}
+
+.profile-stat {
+    padding: 25px 15px;
+
+    text-align: center;
+
+    border-right: 1px solid rgba(30, 91, 58, 0.1);
+}
+
+.profile-stat:last-child {
+    border-right: none;
+}
+
+.profile-stat-number {
+    display: block;
+
+    color: #1E5B3A;
+
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.profile-stat-label {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #81756e;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+/* =========================================
+   STARRED SECTIONS
+   ========================================= */
+
+.profile-starred-section {
+    max-width: 900px;
+    margin: 0 auto 65px;
+}
+
+.profile-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    margin-bottom: 24px;
+}
+
+.profile-section-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #F35F9B;
+    color: white;
+
+    font-size: 20px;
+}
+
+.profile-section-heading .section-kicker {
+    margin: 0 0 3px;
+
+    color: #F35F9B;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.profile-section-heading h2 {
+    margin: 0;
+
+    color: #1E5B3A;
+
+    font-size: 27px;
+}
+
+
+/* =========================================
+   STARRED CARDS
+   ========================================= */
+
+.profile-starred-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.profile-starred-card {
+    padding: 25px;
+
+    background: #fffaf7;
+
+    border: 1px solid rgba(30, 91, 58, 0.1);
+    border-radius: 20px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-starred-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 10px 25px rgba(30, 91, 58, 0.1);
+}
+
+.profile-starred-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+}
+
+.profile-category {
+    display: inline-flex;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    background: #E7EFEA;
+    color: #1E5B3A;
+
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.profile-star {
+    color: #F35F9B;
+    font-size: 19px;
+}
+
+.profile-starred-card h3 {
+    margin: 0 0 10px;
+
+    color: #1E5B3A;
+
+    font-size: 20px;
+    line-height: 1.25;
+}
+
+.profile-starred-card p {
+    margin: 0;
+
+    color: #716761;
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.profile-card-subtitle {
+    margin-bottom: 8px !important;
+
+    color: #F35F9B !important;
+    font-weight: 600;
+}
+
+
+/* =========================================
+   PREVIOUS WORK IMAGE
+   ========================================= */
+
+.profile-starred-image {
+    width: 100%;
+    height: 180px;
+
+    object-fit: cover;
+
+    margin-bottom: 20px;
+
+    border-radius: 14px;
+}
+
+
+/* =========================================
+   EMPTY STATE
+   ========================================= */
+
+.profile-empty {
+    max-width: 600px;
+    margin: 0 auto;
+
+    padding: 55px 30px;
+
+    text-align: center;
+
+    background: #fffaf7;
+
+    border: 1px solid rgba(30, 91, 58, 0.1);
+    border-radius: 24px;
+}
+
+.profile-empty-icon {
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    border-radius: 50%;
+
+    background: #F35F9B;
+    color: white;
+
+    font-size: 28px;
+}
+
+.profile-empty h2 {
+    margin: 0 0 10px;
+
+    color: #1E5B3A;
+}
+
+.profile-empty p {
+    margin: 0 0 25px;
+
+    color: #756b65;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+
+    .profile-section {
+        padding: 50px 0 70px;
+    }
+
+    .profile-card {
+       width: 88%;
+        box-sizing: border-box;
+        margin: 0 auto;
+
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 20px;
+        gap: 14px;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+
+        font-size: 40px;
+    }
+
+   .profile-summary {
+    width: 88%;
+    box-sizing: border-box;
+    margin: 22px auto 50px;
+
+    grid-template-columns: repeat(2, 1fr);
+}
+
+    .profile-stat:nth-child(2) {
+        border-right: none;
+    }
+
+    .profile-stat:nth-child(-n+2) {
+        border-bottom: 1px solid rgba(30, 91, 58, 0.1);
+    }
+
+    .profile-starred-section {
+    width: 88%;
+    box-sizing: border-box;
+    margin: 0 auto 50px;
+  }
+
+    .profile-starred-list {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-section-heading h2 {
+        font-size: 23px;
+    }
+
+     .profile-empty {
+        width: 88%;
+        box-sizing: border-box;
+        margin: 0 auto;
+
+        text-align: center;
+        padding: 28px 20px;
+    }
+
+}

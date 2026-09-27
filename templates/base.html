@@ -13,7 +13,7 @@
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     {% block meta %}{% endblock meta %}
 </head>
@@ -39,14 +39,27 @@
         <a href="{% url 'main:show_previous_work' %}">PreviousWork</a>
 
         {% if user.is_authenticated %}
-            <a href="{% url 'main:show_main' %}#about" class="nav-user">
-                {{ user.username }}
-            </a>
-            <a href="{% url 'main:logout' %}">Logout</a>
-        {% else %}
-            <a href="{% url 'main:login' %}">Login</a>
-            <a href="{% url 'main:register' %}">Register</a>
-        {% endif %}
+
+        <a href="{% url 'main:show_profile' user.username %}"
+        class="nav-user">
+            My Account
+        </a>
+
+        <a href="{% url 'main:logout' %}">
+            Logout
+        </a>
+
+    {% else %}
+
+        <a href="{% url 'main:login' %}">
+            Login
+        </a>
+
+        <a href="{% url 'main:register' %}">
+            Register
+        </a>
+
+    {% endif %}
     </nav>
     </div>
   </header>

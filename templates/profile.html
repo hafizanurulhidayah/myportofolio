@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block meta %}
+    <title>{{ profile_user.username }} - Profile</title>
+{% endblock meta %}
+
+{% block content %}
+
+<main>
+    <section class="profile-section">
+        <div class="container">
+
+        
+            <div class="profile-card">
+
+                <div class="profile-avatar">
+                    {{ profile_user.username|first|upper }}
+                </div>
+
+                <div class="profile-info">
+
+                    <p class="section-kicker">
+                        USER PROFILE
+                    </p>
+
+                    <h1>
+                        {{ profile_user.username }}
+                    </h1>
+
+                    <p class="profile-username">
+                        @{{ profile_user.username }}
+                    </p>
+
+                    {% if role == "Owner" %}
+
+                        <span class="profile-role profile-role-owner">
+                            Owner
+                        </span>
+
+                    {% elif role == "Editor" %}
+
+                        <span class="profile-role profile-role-editor">
+                            Editor
+                        </span>
+
+                    {% else %}
+
+                        <span class="profile-role profile-role-user">
+                            User
+                        </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+           
+            <div class="profile-summary">
+
+                <div class="profile-stat">
+
+                    <span class="profile-stat-number">
+                        {{ total_starred }}
+                    </span>
+
+                    <span class="profile-stat-label">
+                        Total Starred
+                    </span>
+
+                </div>
+
+
+                <div class="profile-stat">
+
+                    <span class="profile-stat-number">
+                        {{ starred_experiences|length }}
+                    </span>
+
+                    <span class="profile-stat-label">
+                        Experiences
+                    </span>
+
+                </div>
+
+
+                <div class="profile-stat">
+
+                    <span class="profile-stat-number">
+                        {{ starred_educations|length }}
+                    </span>
+
+                    <span class="profile-stat-label">
+                        Education
+                    </span>
+
+                </div>
+
+
+                <div class="profile-stat">
+
+                    <span class="profile-stat-number">
+                        {{ starred_previousworks|length }}
+                    </span>
+
+                    <span class="profile-stat-label">
+                        Previous Works
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            
+            {% if starred_experiences %}
+
+                <section class="profile-starred-section">
+
+                    <div class="profile-section-heading">
+
+                        <span class="profile-section-icon">
+                            ★
+                        </span>
+
+                        <div>
+                            <p class="section-kicker">
+                                MY STARS
+                            </p>
+
+                            <h2>
+                                Starred Experiences
+                            </h2>
+                        </div>
+
+                    </div>
+
+
+                    <div class="profile-starred-list">
+
+                        {% for experience in starred_experiences %}
+
+                            <article class="profile-starred-card">
+
+                                <div class="profile-starred-card-top">
+
+                                    <span class="profile-category">
+                                        {{ experience.get_category_display }}
+                                    </span>
+
+                                    <span class="profile-star">
+                                        ★
+                                    </span>
+
+                                </div>
+
+
+                                <h3>
+                                    {{ experience.title }}
+                                </h3>
+
+
+                                <p>
+                                    {{ experience.description }}
+                                </p>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                </section>
+
+            {% endif %}
+
+
+          
+            {% if starred_educations %}
+
+                <section class="profile-starred-section">
+
+                    <div class="profile-section-heading">
+
+                        <span class="profile-section-icon">
+                            ★
+                        </span>
+
+                        <div>
+                            <p class="section-kicker">
+                                MY STARS
+                            </p>
+
+                            <h2>
+                                Starred Education
+                            </h2>
+                        </div>
+
+                    </div>
+
+
+                    <div class="profile-starred-list">
+
+                        {% for education in starred_educations %}
+
+                            <article class="profile-starred-card">
+
+                                <div class="profile-starred-card-top">
+
+                                    <span class="profile-category">
+                                        Education
+                                    </span>
+
+                                    <span class="profile-star">
+                                        ★
+                                    </span>
+
+                                </div>
+
+
+                                <h3>
+                                    {{ education.institution }}
+                                </h3>
+
+
+                                <p class="profile-card-subtitle">
+                                    {{ education.degree }}
+                                </p>
+
+
+                                <p>
+                                    {{ education.year }}
+                                </p>
+
+
+                                {% if education.achievements %}
+                                    <p>
+                                        {{ education.achievements }}
+                                    </p>
+                                {% endif %}
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                </section>
+
+            {% endif %}
+
+
+           
+            {% if starred_previousworks %}
+
+                <section class="profile-starred-section">
+
+                    <div class="profile-section-heading">
+
+                        <span class="profile-section-icon">
+                            ★
+                        </span>
+
+                        <div>
+                            <p class="section-kicker">
+                                MY STARS
+                            </p>
+
+                            <h2>
+                                Starred Previous Works
+                            </h2>
+                        </div>
+
+                    </div>
+
+
+                    <div class="profile-starred-list">
+
+                        {% for previous_work in starred_previousworks %}
+
+                            <article class="profile-starred-card">
+
+                                {% if previous_work.photo %}
+
+                                    <img
+                                        src="{{ previous_work.photo.url }}"
+                                        alt="Dokumentasi {{ previous_work.title }}"
+                                        class="profile-starred-image"
+                                    >
+
+                                {% endif %}
+
+
+                                <div class="profile-starred-card-top">
+
+                                    <span class="profile-category">
+                                        {{ previous_work.category }}
+                                    </span>
+
+                                    <span class="profile-star">
+                                        ★
+                                    </span>
+
+                                </div>
+
+
+                                <h3>
+                                    {{ previous_work.title }}
+                                </h3>
+
+
+                                <p class="profile-card-subtitle">
+                                    {{ previous_work.role }}
+                                </p>
+
+
+                                <p>
+                                    {{ previous_work.description }}
+                                </p>
+
+
+                                <p>
+                                    {{ previous_work.date }}
+                                </p>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                </section>
+
+            {% endif %}
+
+
+            
+            {% if not starred_experiences and not starred_educations and not starred_previousworks %}
+
+                <section class="profile-empty">
+
+                    <div class="profile-empty-icon">
+                        ★
+                    </div>
+
+                    <h2>
+                        Belum ada yang di-star
+                    </h2>
+
+                    <p>
+                        {{ profile_user.username }} belum memberikan
+                        star pada portfolio apa pun.
+                    </p>
+
+                    <a
+                        href="{% url 'main:show_main' %}"
+                        class="button"
+                    >
+                        Kembali ke Portfolio
+                    </a>
+
+                </section>
+
+            {% endif %}
+
+        </div>
+    </section>
+</main>
+
+{% endblock content %}

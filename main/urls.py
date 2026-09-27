@@ -24,6 +24,7 @@ from main.views import (
     toggle_star_experience,
     toggle_star_education,
     toggle_star_previouswork,
+    show_profile,
 )
 
 app_name = "main"
@@ -50,5 +51,7 @@ urlpatterns = [
     path("experience/<uuid:experience_id>/star/",toggle_star_experience,name="toggle_star_experience",),
     path("education/<int:education_id>/star/",toggle_star_education,name="toggle_star_education"),
     path("previous-work/<int:previouswork_id>/star/",toggle_star_previouswork,name="toggle_star_previouswork"),
-    
+    path(
+    "profile/<str:username>/",show_profile,name="show_profile"),
+
 ]
