@@ -6,7 +6,7 @@
 
     <button type="submit"
             class="button button-star{% if user in experience.starred_by.all %} is-starred{% endif %}"
-            title="{% if experience.starred_by.all %}Unstar{% else %}Jadilah yang pertama memberi star{% endif %}">
+            title="{% if user in experience.starred_by.all %}Unstar{% else %}Jadilah yang pertama memberi star{% endif %}">
 
         <span aria-hidden="true">★</span>
 

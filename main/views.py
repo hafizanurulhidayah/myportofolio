@@ -1,7 +1,7 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 from django.core import serializers
 from django.contrib.auth import login, logout 
 from django.contrib.auth.models import User
@@ -96,13 +96,18 @@ def show_profile(request, username):
 
 @login_required(login_url="/login/")
 def toggle_star_experience(request, experience_id):
-    experience = get_object_or_404(Experience, pk=experience_id)
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
 
-    if request.method == "POST":
-        if request.user in experience.starred_by.all():
-            experience.starred_by.remove(request.user)
-        else:
-            experience.starred_by.add(request.user)
+    experience = get_object_or_404(
+        Experience,
+        pk=experience_id
+    )
+
+    if request.user in experience.starred_by.all():
+        experience.starred_by.remove(request.user)
+    else:
+        experience.starred_by.add(request.user)
 
     return redirect("main:show_experience")
 
@@ -111,6 +116,9 @@ def toggle_star_experience(request, experience_id):
 def toggle_star_education(request, education_id):
     education = get_object_or_404(Education, pk=education_id)
 
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    
     if request.method == "POST":
         # Kalau akun ini sudah pernah memberi star, batalkan star-nya.
         # Kalau belum, tambahkan star.
@@ -126,6 +134,9 @@ def toggle_star_education(request, education_id):
 def toggle_star_previouswork(request, previouswork_id):
     previouswork = get_object_or_404(PreviousWork, pk=previouswork_id)
 
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    
     if request.method == "POST":
         # Kalau akun ini sudah pernah memberi star, batalkan star-nya.
         # Kalau belum, tambahkan star.
@@ -236,8 +247,7 @@ def delete_experience(request, experience_id):
         secret = request.POST.get("secret")
         env_secret = os.getenv("PORTFOLIO_SECRET")
 
-        print("SECRET DARI FORM:", repr(secret))
-        print("SECRET DARI ENV :", repr(env_secret))
+       
 
         if secret != env_secret:
             messages.error(request, "Security Code salah!")
@@ -259,8 +269,7 @@ def delete_education(request, education_id):
           secret = request.POST.get("secret")
           env_secret = os.getenv("PORTFOLIO_SECRET")
   
-          print("SECRET DARI FORM:", repr(secret))
-          print("SECRET DARI ENV :", repr(env_secret))
+    
   
           if secret != env_secret:
               messages.error(request, "Security Code salah!")
@@ -510,6 +519,7 @@ def update_experience(request, experience_id):
         }
     )
 
+@login_required(login_url="/login/")
 def update_education(request, education_id):
     education = get_object_or_404(
         Education,
@@ -569,6 +579,7 @@ def update_education(request, education_id):
         }
     )
 
+@login_required(login_url="/login/")
 def update_previous_work(request, previous_work_id):
     previous_work = get_object_or_404(
         PreviousWork,
