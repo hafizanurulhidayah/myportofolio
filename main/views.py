@@ -62,7 +62,7 @@ def logout_user(request):
 
 
 @login_required(login_url="/login/")
-def toggle_star(request, experience_id):
+def toggle_star_experience(request, experience_id):
     experience = get_object_or_404(Experience, pk=experience_id)
 
     if request.method == "POST":
@@ -72,6 +72,36 @@ def toggle_star(request, experience_id):
             experience.starred_by.add(request.user)
 
     return redirect("main:show_experience")
+
+
+@login_required(login_url="/login/")
+def toggle_star_education(request, education_id):
+    education = get_object_or_404(Education, pk=education_id)
+
+    if request.method == "POST":
+        # Kalau akun ini sudah pernah memberi star, batalkan star-nya.
+        # Kalau belum, tambahkan star.
+        if request.user in education.starred_by.all():
+            education.starred_by.remove(request.user)
+        else:
+            education.starred_by.add(request.user)
+
+    return redirect("main:show_education")
+
+
+@login_required(login_url="/login/")
+def toggle_star_previouswork(request, previouswork_id):
+    previouswork = get_object_or_404(PreviousWork, pk=previouswork_id)
+
+    if request.method == "POST":
+        # Kalau akun ini sudah pernah memberi star, batalkan star-nya.
+        # Kalau belum, tambahkan star.
+        if request.user in previouswork.starred_by.all():
+            previouswork.starred_by.remove(request.user)
+        else:
+            previouswork.starred_by.add(request.user)
+
+    return redirect("main:show_previous_work")
 
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'Belum ada sesi login / Cookie tidak ditemukan')
@@ -408,11 +438,15 @@ def create_experience(request):
     )
 
 # update 
+@login_required(login_url="/login/") 
 def update_experience(request, experience_id):
     experience = get_object_or_404(
         Experience,
         id=experience_id
     )
+
+    if not request.user.has_perm("main.change_experience"):
+        raise PermissionDenied
 
     if request.method == "POST":
         form = ExperienceForm(
@@ -448,6 +482,9 @@ def update_education(request, education_id):
         Education,
         id=education_id
     )
+
+    if not request.user.has_perm("main.change_education"):
+        raise PermissionDenied
 
     if request.method == "POST":
         form = EducationForm(
@@ -504,6 +541,9 @@ def update_previous_work(request, previous_work_id):
         PreviousWork,
         pk=previous_work_id
     )
+
+    if not request.user.has_perm("main.change_previouswork"):
+        raise PermissionDenied
 
     if request.method == "POST":
         form = PreviousWorkForm(

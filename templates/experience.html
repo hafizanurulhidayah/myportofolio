@@ -66,11 +66,13 @@
                                     </a>
                                 {% endif %}
 
+                            {% if perms.main.change_experience %}
                             <a href="{% url 'main:update_experience' experience.id %}"
                             class="button button-edit">
                                 Edit
 
                             </a>
+                           {% endif %}
 
                             {% include "components/experience_star.html" with experience=experience %}
                                 {% if user.is_superuser %}

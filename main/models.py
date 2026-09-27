@@ -22,7 +22,6 @@ class Experience(models.Model):
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateTimeField()
     ended_at = models.DateTimeField(blank=True, null=True)
-    experience_image_url = models.URLField(blank=True, max_length=500)
     starred_by = models.ManyToManyField(
         User, related_name="starred_experience", blank=True
     )
@@ -47,6 +46,9 @@ class Education(models.Model):
     degree = models.CharField(max_length=100) 
     year = models.CharField(max_length=20)
     achievements = models.TextField()
+    starred_by = models.ManyToManyField(
+            User, related_name="starred_education", blank=True
+        )
 
 class PreviousWork(models.Model):
     title = models.CharField(max_length=100)
@@ -60,6 +62,9 @@ class PreviousWork(models.Model):
         blank=True,
         null=True
     )
+    starred_by = models.ManyToManyField(
+            User, related_name="starred_previouswork", blank=True
+        )
 
 
 

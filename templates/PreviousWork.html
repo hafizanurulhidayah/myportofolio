@@ -90,12 +90,16 @@
                                 </a>
                             {% endif %}
 
+                            {% if perms.main.change_previouswork %}
                             <a
                                 href="{% url 'main:update_previous_work' previous_work.id %}"
                                 class="button  button-edit"
                             >
                                 Edit
                             </a>
+                            {% endif %}
+                            
+                            {% include "components/previouswork_star.html" with previouswork=previous_work %}
                             {% if user.is_superuser %}  
                                 {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
                             {% endif %}  
