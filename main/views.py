@@ -1,13 +1,15 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.core import serializers
 from django.contrib.auth import login, logout 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required  
-from django.core.exceptions import PermissionDenied       
+from django.core.exceptions import PermissionDenied    
+from django.views.decorators.http import require_POST 
+ 
 
 import os
 import datetime
@@ -169,22 +171,13 @@ def show_main(request):
     return render(request, "index.html", context)
 
 
-
 def show_experience(request):
-    json_response = get_experience_json(request)
-
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    experiences = [experience.object for experience in experiences]
-
     title_query = request.GET.get("title", "").strip()
 
     context = {
         "name": "Hafiza Nurul Hidayah",
-        "experience_list": experiences,
         "title_query": title_query,
+         "form": ExperienceForm(),
     }
 
     return render(request, "experience.html", context)
@@ -192,20 +185,10 @@ def show_experience(request):
 def show_previous_work(request):
     search_query = request.GET.get("search", "").strip()
 
-    previous_work_list = PreviousWork.objects.all()
-
-    if search_query:
-        previous_work_list = previous_work_list.filter(
-            Q(title__icontains=search_query)
-            | Q(role__icontains=search_query)
-            | Q(category__icontains=search_query)
-            | Q(description__icontains=search_query)
-        )
-
     context = {
         "name": "Hafiza Nurul Hidayah",
-        "previous_work_list": previous_work_list,
         "search_query": search_query,
+         "form": PreviousWorkForm(),
     }
 
     return render(
@@ -213,29 +196,17 @@ def show_previous_work(request):
         "PreviousWork.html",
         context
     )
-
-
 def show_education(request):
     title_query = request.GET.get("title", "").strip()
 
-    education_list = Education.objects.all()
-
-    if title_query:
-        education_list = education_list.filter(
-            institution__icontains=title_query
-        )
-
-    for education in education_list:
-        education.achievements_list = education.achievements.splitlines()
-
-
     context = {
         "name": "Hafiza Nurul Hidayah",
-        "education_list": education_list,
         "title_query": title_query,
+        "form": EducationForm(),
     }
 
     return render(request, "education.html", context)
+
 
 @login_required(login_url="/login/") 
 def delete_experience(request, experience_id):
@@ -314,35 +285,132 @@ def delete_previous_work(request, previous_work_id):
 
 def get_education_json(request):
     title_query = request.GET.get("title", "").strip()
-    educations = Education.objects.all()
+    educations = Education.objects.prefetch_related("starred_by").all()
 
     if title_query:
-        educations = Education.objects.filter(
+        educations = educations.filter(
             institution__icontains=title_query
         )
 
-    educations_json = serializers.serialize("json", educations)
-    return HttpResponse(educations_json, content_type="application/json")
+    data = []
 
+    for education in educations:
+        starred_users = education.starred_by.all()
+
+        is_starred = (
+            request.user in starred_users
+            if request.user.is_authenticated
+            else False
+        )
+
+        starred_by_names = ", ".join(
+            [u.username for u in starred_users]
+        )
+
+        data.append({
+            "pk": str(education.id),
+            "fields": {
+                "institution": education.institution,
+                "degree": education.degree,
+                "year": education.year,
+                "achievements": education.achievements,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 def get_experience_json(request):
     title_query = request.GET.get("title", "").strip()
-    experiences = Experience.objects.all()
+    experiences = Experience.objects.prefetch_related("starred_by").all()
 
     if title_query:
-        experiences = Experience.objects.filter(title__icontains=title_query)
+        experiences = experiences.filter(
+            title__icontains=title_query
+        )
 
-    experiences_json = serializers.serialize("json", experiences, use_natural_foreign_keys=True)
-    return HttpResponse(experiences_json, content_type="application/json")
+    data = []
+
+    for experience in experiences:
+        starred_users = experience.starred_by.all()
+
+        is_starred = (
+            starred_users.filter(pk=request.user.pk).exists()
+            if request.user.is_authenticated
+            else False
+        )
+
+        starred_by_names = ", ".join(
+            [u.username for u in starred_users]
+        )
+
+        data.append({
+            "pk": str(experience.id),
+            "fields": {
+                "title": experience.title,
+                "description": experience.description,
+                "category": experience.get_category_display(),
+                "started_at": (
+                    experience.started_at.isoformat()
+                    if experience.started_at
+                    else None
+                ),
+                "ended_at": (
+                    experience.ended_at.isoformat()
+                    if experience.ended_at
+                    else None
+                ),
+                "is_ongoing": experience.is_ongoing,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 def get_previous_work_json(request):
     title_query = request.GET.get("title", "").strip()
-    previouswork = PreviousWork.objects.all()
+    previouswork = PreviousWork.objects.prefetch_related("starred_by").all()
 
     if title_query:
-        previouswork = previouswork.filter(title__icontains=title_query)
+        previouswork = previouswork.filter(
+            title__icontains=title_query
+        )
 
-    previouswork_json = serializers.serialize("json", previouswork)
-    return HttpResponse(previouswork_json, content_type="application/json")
+    data = []
+
+    for work in previouswork:
+        starred_users = work.starred_by.all()
+
+        is_starred = (
+            request.user in starred_users
+            if request.user.is_authenticated
+            else False
+        )
+
+        starred_by_names = ", ".join(
+            [u.username for u in starred_users]
+        )
+
+        data.append({
+            "pk": str(work.id),
+            "fields": {
+                "title": work.title,
+                "role": work.role,
+                "description": work.description,
+                "date": work.date,
+                "category": work.category,
+                "link": work.link,
+                "photo": work.photo.url if work.photo else None,
+                "star_count": starred_users.count(),
+                "is_starred": is_starred,
+                "starred_by_names": starred_by_names,
+            }
+        })
+
+    return JsonResponse(data, safe=False)
 
 @login_required(login_url="/login/") 
 def create_education(request):
@@ -643,3 +711,21 @@ def update_previous_work(request, previous_work_id):
             "previous_work": previous_work,
         }
     )
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            status=403,
+        )
+
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Experience berhasil ditambahkan.", "pk": str(experience.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
