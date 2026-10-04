@@ -25,7 +25,8 @@ from main.views import (
     toggle_star_education,
     toggle_star_previouswork,
     show_profile,
-    create_experience_ajax
+    create_experience_ajax,
+    create_education_ajax,
 )
 
 app_name = "main"
@@ -37,7 +38,7 @@ urlpatterns = [
     path("education/add/", create_education, name="create_education"),
     path("experience/add/", create_experience, name="create_experience"),
     path("PreviousWork/add/", create_previous_work, name="create_previous_work"),
-    path("api/educations/", get_education_json, name="get_educations_json"),
+    path("api/education/",get_education_json,name="get_education_json",),
     path("api/experiences/", get_experience_json, name="get_experience_json"),
     path("api/previouswork/", get_previous_work_json, name="get_previous_work_json"),
     path("experience/delete/<uuid:experience_id>/",delete_experience,name="delete_experience",),
@@ -54,5 +55,6 @@ urlpatterns = [
     path("previous-work/<int:previouswork_id>/star/",toggle_star_previouswork,name="toggle_star_previouswork"),
     path("profile/<str:username>/",show_profile,name="show_profile"),
     path("experience/add-ajax/", create_experience_ajax, name="create_experience_ajax"),
+    path("education/add-ajax/", create_education_ajax, name="create_education_ajax"),
 
 ]

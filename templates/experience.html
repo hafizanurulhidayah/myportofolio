@@ -12,9 +12,6 @@
             Perjalanan saya sejauh ini</p>
 
             <div class="experience-header">
-                <button class="button button-secondary" onclick="showToast('Notifikasi Sistem', 'Experience berhasil dimuat dengan baik!', 'success')">
-                    Test Toast Notifikasi
-                </button>
                 <h1>Experience</h1>
                 {% if user.is_superuser %} 
                     {% include "components/experience_form_modal.html" %}
@@ -117,6 +114,10 @@
             </div>
             {% endif %}
 
+            {% if user.is_superuser %}
+                {% include "components/experience_form_modal.html" %}
+            {% endif %}
+
             <script>
                 // Konfigurasi
                 const BASE_EXPERIENCE_ENDPOINT = "{% url 'main:get_experience_json' %}";
@@ -124,6 +125,9 @@
                 const CAN_EDIT_EXPERIENCE ="{{ perms.main.change_experience|yesno:'true,false' }}" === "true";
                 let experiencesAbortController;
                 
+                const SEARCH_DEBOUNCE_DELAY = 300;
+                let searchDebounceTimer;
+
                 // Elemen DOM
                 const loadingState = document.getElementById('loading');
                 const errorState = document.getElementById('error');
@@ -131,8 +135,6 @@
                 const gridContainer = document.getElementById('grid');
                 const searchForm = document.getElementById('experience-search-form');
                 const searchInput = document.getElementById('search-input');
-                const SEARCH_DEBOUNCE_DELAY = 300;
-                let searchDebounceTimer;
 
                 // Menampilkan / menyembunyikan state halaman
                 function displayPageSection({
@@ -342,7 +344,7 @@
                     fetchExperiences(searchInput.value.trim());
                 }
 
-                searchInput.addEventListener("input", function() {
+                searchInput.addEventListener('input', function() {
                     clearTimeout(searchDebounceTimer);
 
                     searchDebounceTimer = setTimeout(function() {
@@ -350,8 +352,9 @@
                     }, SEARCH_DEBOUNCE_DELAY);
                 });
 
-                searchForm.addEventListener("submit", function(event) {
+                searchForm.addEventListener('submit', function(event) {
                     event.preventDefault();
+
                     clearTimeout(searchDebounceTimer);
                     searchExperiences();
                 });

@@ -197,6 +197,7 @@ def show_previous_work(request):
         "PreviousWork.html",
         context
     )
+
 def show_education(request):
     title_query = request.GET.get("title", "").strip()
 
@@ -283,9 +284,9 @@ def delete_previous_work(request, previous_work_id):
 
 
  
-
 def get_education_json(request):
     title_query = request.GET.get("title", "").strip()
+
     educations = Education.objects.prefetch_related("starred_by").all()
 
     if title_query:
@@ -305,7 +306,7 @@ def get_education_json(request):
         )
 
         starred_by_names = ", ".join(
-            [u.username for u in starred_users]
+            [user.username for user in starred_users]
         )
 
         data.append({
@@ -322,6 +323,7 @@ def get_education_json(request):
         })
 
     return JsonResponse(data, safe=False)
+
 def get_experience_json(request):
     title_query = request.GET.get("title", "").strip()
     experiences = Experience.objects.prefetch_related("starred_by").all()
@@ -730,3 +732,31 @@ def create_experience_ajax(request):
         )
 
     return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
+
+@require_POST
+def create_education_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "message": "Hanya pemilik portofolio yang dapat menambahkan education."
+            },
+            status=403,
+        )
+
+    form = EducationForm(request.POST)
+
+    if form.is_valid():
+        education = form.save()
+
+        return JsonResponse(
+            {
+                "message": "Education berhasil ditambahkan.",
+                "pk": str(education.id),
+            },
+            status=201,
+        )
+
+    return JsonResponse(
+        {"errors": form.errors.get_json_data()},
+        status=400,
+    )

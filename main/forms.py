@@ -68,8 +68,19 @@ class EducationForm(ModelForm):
                     "placeholder": "Tuliskan pencapaian selama pendidikan",
                     "rows": 3,
                 }
-            ),
+            ),   
         }
+    def clean_institution(self):
+        return strip_tags(self.cleaned_data["institution"]).strip()
+
+    def clean_degree(self):
+        return strip_tags(self.cleaned_data["degree"]).strip()
+
+    def clean_year(self):
+        return strip_tags(self.cleaned_data["year"]).strip()
+
+    def clean_achievements(self):
+        return strip_tags(self.cleaned_data["achievements"]).strip()
 
 
 class ExperienceForm(ModelForm):
@@ -102,45 +113,45 @@ class ExperienceForm(ModelForm):
             "ended_at": "Pengalaman selesai pada (dd//mm/yy)",
         }
 
-    widgets = {
-        "title": TextInput(
-            attrs={
-                "placeholder": "Software Engineer Intern",
-                "maxlength": 255,
-                "class": "form-control",
-            }
-        ),
-        "description": Textarea(
-            attrs={
-                "placeholder": "Ceritakan pengalaman atau tanggung jawabmu...",
-                "rows": 4,
-                "class": "form-control",
-            }
-        ),
-        "category": Select(
-            attrs={
-                "class": "form-control",
-            }
-        ),
-        "thumbnail": TextInput(
-            attrs={
-                "placeholder": "https://example.com/image.jpg",
-                "class": "form-control",
-            }
-        ),
-        "started_at": DateTimeInput(
-            attrs={
-                "type": "datetime-local",
-                "class": "form-control",
-            }
-        ),
-        "ended_at": DateTimeInput(
-            attrs={
-                "type": "datetime-local",
-                "class": "form-control",
-            }
-        ),
-    }
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Software Engineer Intern",
+                    "maxlength": 255,
+                    "class": "form-control",
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Ceritakan pengalaman atau tanggung jawabmu...",
+                    "rows": 4,
+                    "class": "form-control",
+                }
+            ),
+            "category": Select(
+                attrs={
+                    "class": "form-control",
+                }
+            ),
+            "thumbnail": TextInput(
+                attrs={
+                    "placeholder": "https://example.com/image.jpg",
+                    "class": "form-control",
+                }
+            ),
+            "started_at": DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "class": "form-control",
+                }
+            ),
+            "ended_at": DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "class": "form-control",
+                }
+            ),
+        }
     def clean_title(self):
         title = strip_tags(self.cleaned_data["title"]).strip()
         if not title:
