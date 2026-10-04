@@ -239,3 +239,21 @@ class PreviousWorkForm(ModelForm):
                 }
             ),
         }
+
+    def clean_title(self):
+        return strip_tags(self.cleaned_data["title"]).strip()
+
+    def clean_role(self):
+        return strip_tags(self.cleaned_data["role"]).strip()
+
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()
+
+    def clean_date(self):
+        return self.cleaned_data["date"]
+
+    def clean_category(self):
+        return strip_tags(self.cleaned_data["category"]).strip()
+
+    def clean_link(self):
+        return strip_tags(self.cleaned_data["link"]).strip()

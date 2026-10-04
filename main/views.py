@@ -382,6 +382,7 @@ def get_previous_work_json(request):
             title__icontains=title_query
         )
 
+    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
     data = []
 
     for work in previouswork:
@@ -758,5 +759,54 @@ def create_education_ajax(request):
 
     return JsonResponse(
         {"errors": form.errors.get_json_data()},
+        status=400,
+    )
+
+@require_POST
+def create_previous_work_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {
+                "message": "Hanya pemilik portofolio yang dapat menambahkan previous work."
+            },
+            status=403,
+        )
+
+    form = PreviousWorkForm(request.POST, request.FILES)
+
+    print("=== AJAX PREVIOUS WORK ===")
+    print("POST:", request.POST)
+    print("SECRET:", request.POST.get("secret"))
+    print("ENV SECRET:", os.getenv("PORTFOLIO_SECRET"))
+    print("SECRET DARI FORM:", repr(request.POST.get("secret")))
+
+
+    if form.is_valid():
+
+        secret = form.cleaned_data["secret"]
+        env_secret = os.getenv("PORTFOLIO_SECRET")
+
+        if secret != env_secret:
+            return JsonResponse(
+                {
+                    "message": "Security Code salah!"
+                },
+                status=400,
+            )
+
+        previous_work = form.save()
+
+        return JsonResponse(
+            {
+                "message": "Previous work berhasil ditambahkan.",
+                "pk": str(previous_work.id),
+            },
+            status=201,
+        )
+
+    return JsonResponse(
+        {
+            "errors": form.errors.get_json_data()
+        },
         status=400,
     )

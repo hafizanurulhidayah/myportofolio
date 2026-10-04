@@ -17,110 +17,609 @@
             <div class="previous-work-header">
                 <h1>Previous Work</h1>
 
-                {% if user.is_superuser %} 
-                <a href="{% url 'main:create_previous_work' %}"
-                   class="button previous-work-add-button">
+               {% if user.is_superuser %}
+                <button type="button"
+                        class="button previous-work-add-button"
+                        popovertarget="add-previous-work-modal">
                     <span aria-hidden="true">+</span>
                     Tambah Previous Work
-                </a>
-                {% endif %}  
+                </button>
+            {% endif %}
             </div>
 
-            <div class="previous-work-search">
-                <form method="get">
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ search_query }}"
-                        placeholder="Cari previous work..."
-                    >
+            <form id="previous-work-search-form"
+                  class="previous-work-search">
 
-                    <button type="submit" class="button">
-                        Cari
-                    </button>
-                </form>
+                <input
+                    type="search"
+                    id="previous-work-search-input"
+                    name="title"
+                    value="{{ title_query }}"
+                    placeholder="Cari berdasarkan nama previous work..."
+                    class="previous-work-search__input"
+                    aria-label="Cari berdasarkan nama previous work">
+
+                <button type="submit" class="button">
+                    Cari
+                </button>
+            </form>
+
+            <!-- Loading State -->
+            <div id="previous-work-loading"
+                 class="empty-state hide">
+                <p>Memuat previous work...</p>
             </div>
 
-        <div class="previous-work-list">
+            <!-- Error State -->
+            <div id="previous-work-error"
+                 class="empty-state hide">
+                <p>
+                    Gagal memuat data previous work.
+                    Silakan coba lagi.
+                </p>
+            </div>
 
-            <div class="previous-work-list">
+            <!-- Empty State -->
+            <div id="previous-work-empty"
+                 class="empty-state hide">
+                <p>
+                    Belum ada previous work yang ditambahkan
+                    atau ditemukan.
+                </p>
+            </div>
 
-                {% for previous_work in previous_work_list %}
-
-                    <article class="previous-work-card">
-
-                        {% if previous_work.photo %}
-                            <img
-                                src="{{ previous_work.photo.url }}"
-                                alt="Dokumentasi {{ previous_work.title }}"
-                                class="previous-work-image"
-                            >
-                        {% endif %}
-
-                        <div class="previous-work-content">
-
-                            <span class="previous-work-category">
-                                {{ previous_work.category }}
-                            </span>
-
-                            <h2>{{ previous_work.title }}</h2>
-
-                            <p class="previous-work-role">
-                                {{ previous_work.role }}
-                            </p>
-
-                            <p class="previous-work-description">
-                                {{ previous_work.description }}
-                            </p>
-
-                            <p class="previous-work-date">
-                                {{ previous_work.date }}
-                            </p>
-
-                            <div class="previous-work-actions">
-
-                            {% if previous_work.link %}
-                                <a
-                                    href="{{ previous_work.link }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="button button-detail"
-                                >
-                                    Lihat Detail
-                                </a>
-                            {% endif %}
-
-                            {% if perms.main.change_previouswork %}
-                            <a
-                                href="{% url 'main:update_previous_work' previous_work.id %}"
-                                class="button  button-edit"
-                            >
-                                Edit
-                            </a>
-                            {% endif %}
-                            
-                            {% include "components/previouswork_star.html" with previouswork=previous_work %}
-                            {% if user.is_superuser %}  
-                                {% include "components/previous_work_delete_modal.html" with previous_work=previous_work %}
-                            {% endif %}  
-                        </div>
-
-                        </div>
-
-                    </article>
-
-                {% empty %}
-
-                    <p class="empty-state">
-                        Belum ada previous work yang ditambahkan.
-                    </p>
-
-                {% endfor %}
-
+            <!-- Previous Work Grid -->
+            <div id="previous-work-grid"
+                 class="previous-work-list hide">
             </div>
 
         </div>
     </section>
-</main>
+{% if user.is_superuser %}
+<div id="delete-previous-work-modal"
+     class="previous-work-form-modal"
+     popover="auto">
 
-{% endblock content %}
+    <div class="previous-work-form-modal__content">
+
+        <button type="button"
+                class="previous-work-form-modal__close"
+                popovertarget="delete-previous-work-modal"
+                popovertargetaction="hide"
+                aria-label="Tutup">
+            ×
+        </button>
+
+        <h2>Hapus Previous Work</h2>
+
+        <p>
+            Masukkan Security Code untuk menghapus previous work ini.
+        </p>
+
+        <form id="delete-previous-work-form"
+              method="post">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="delete-previous-work-secret">
+                    Security Code
+                </label>
+
+                <input type="password"
+                       id="delete-previous-work-secret"
+                       name="secret"
+                       required>
+            </div>
+
+            <div class="previous-work-form-modal__actions">
+
+                <button type="button"
+                        class="button button-secondary"
+                        popovertarget="delete-previous-work-modal"
+                        popovertargetaction="hide">
+                    Batal
+                </button>
+
+                <button type="submit"
+                        class="button button-danger">
+                    Hapus Previous Work
+                </button>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% if user.is_superuser %}
+    {% include "components/previous_work_form_modal.html" %}
+{% endif %}
+<script>
+    // Konfigurasi
+    const BASE_PREVIOUS_WORK_ENDPOINT =
+        "{% url 'main:get_previous_work_json' %}";
+
+    const IS_SUPERUSER =
+        "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+
+    const CAN_EDIT_PREVIOUS_WORK =
+        "{{ perms.main.change_previouswork|yesno:'true,false' }}" === "true";
+
+    let previousWorkAbortController;
+
+    const SEARCH_DEBOUNCE_DELAY = 300;
+    let searchDebounceTimer;
+
+
+    // Elemen DOM
+    const loadingState =
+        document.getElementById('previous-work-loading');
+
+    const errorState =
+        document.getElementById('previous-work-error');
+
+    const emptyState =
+        document.getElementById('previous-work-empty');
+
+    const gridContainer =
+        document.getElementById('previous-work-grid');
+
+    const searchForm =
+        document.getElementById('previous-work-search-form');
+
+    const searchInput =
+        document.getElementById('previous-work-search-input');
+
+
+    // Escape HTML untuk mencegah XSS
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#39;');
+    }
+
+
+    // Menampilkan / menyembunyikan state
+    function displayPreviousWorkSection({
+        showLoading = false,
+        showError = false,
+        showEmpty = false,
+        showGrid = false
+    }) {
+        loadingState.classList.toggle('hide', !showLoading);
+        errorState.classList.toggle('hide', !showError);
+        emptyState.classList.toggle('hide', !showEmpty);
+        gridContainer.classList.toggle('hide', !showGrid);
+    }
+
+    function openDeletePreviousWorkModal(previousWorkId) {
+    const form = document.getElementById(
+        'delete-previous-work-form'
+    );
+
+    const deleteUrl =
+        "{% url 'main:delete_previous_work' 0 %}"
+        .replace('0', previousWorkId);
+
+    form.action = deleteUrl;
+
+    form.reset();
+
+    document
+        .getElementById('delete-previous-work-modal')
+        .showPopover();
+}
+
+
+    // Membuat card Previous Work
+    function buildPreviousWorkCardElement(item) {
+        const work = item.fields;
+        const workId = item.pk;
+
+        const articleElement =
+            document.createElement('article');
+
+        articleElement.className = 'previous-work-card';
+
+
+        // Photo
+        const photoHtml = work.photo
+            ? `
+                <img
+                    src="${escapeHtml(work.photo)}"
+                    alt="Dokumentasi ${escapeHtml(work.title)}"
+                    class="previous-work-image"
+                >
+              `
+            : '';
+
+
+        // Detail link
+        const linkHtml = work.link
+            ? `
+                <a
+                    href="${escapeHtml(work.link)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="button button-detail"
+                >
+                    Lihat Detail
+                </a>
+              `
+            : '';
+
+
+        // Star URL
+        const starUrl =
+            "{% url 'main:toggle_star_previouswork' 0 %}"
+            .replace('0', workId);
+
+
+        const isStarredClass =
+            work.is_starred ? " is-starred" : "";
+
+        const starText =
+            work.is_starred ? "Unstar" : "Star";
+
+        const starTitle =
+            work.star_count > 0
+                ? `Dibintangi oleh ${escapeHtml(work.starred_by_names)}`
+                : "Jadilah yang pertama memberi star";
+
+
+        // Edit
+        const editUrl =
+            "{% url 'main:update_previous_work' 0 %}"
+            .replace('0', workId);
+
+        const editHtml = CAN_EDIT_PREVIOUS_WORK
+            ? `
+                <a
+                    href="${editUrl}"
+                    class="button button-edit"
+                >
+                    Edit
+                </a>
+              `
+            : '';
+
+
+        // Delete
+        const deleteUrl =
+            "{% url 'main:delete_previous_work' 0 %}"
+            .replace('0', workId);
+
+        // Delete
+       const deleteHtml = IS_SUPERUSER
+        ? `<button type="button"
+                class="button button-danger"
+                onclick="openDeletePreviousWorkModal('${workId}')">
+                Hapus
+        </button>`
+        : '';
+
+        // Card
+        const completeCardHtml = `
+            ${photoHtml}
+
+            <div class="previous-work-content">
+
+                <span class="previous-work-category">
+                    ${escapeHtml(work.category)}
+                </span>
+
+                <h2>
+                    ${escapeHtml(work.title)}
+                </h2>
+
+                <p class="previous-work-role">
+                    ${escapeHtml(work.role)}
+                </p>
+
+                <p class="previous-work-description">
+                    ${escapeHtml(work.description)}
+                </p>
+
+                <p class="previous-work-date">
+                    ${escapeHtml(work.date)}
+                </p>
+
+                <div class="previous-work-actions">
+
+                    ${linkHtml}
+
+                    ${editHtml}
+
+                    <form
+                        method="post"
+                        action="${starUrl}"
+                        class="star-form"
+                    >
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="button button-star${isStarredClass}"
+                            title="${starTitle}"
+                        >
+                            <span aria-hidden="true">★</span>
+                            ${starText}
+                            <span class="star-count">
+                                ${escapeHtml(work.star_count)}
+                            </span>
+                        </button>
+                    </form>
+
+                    ${deleteHtml}
+
+                </div>
+            </div>
+        `;
+
+        articleElement.innerHTML = completeCardHtml;
+
+        return articleElement;
+    }
+
+
+    // Fetch Previous Work
+    async function fetchPreviousWorks(searchQuery = "") {
+
+        if (previousWorkAbortController) {
+            previousWorkAbortController.abort();
+        }
+
+        previousWorkAbortController =
+            new AbortController();
+
+        try {
+            displayPreviousWorkSection({
+                showLoading: true
+            });
+
+
+            const url = searchQuery
+                ? `${BASE_PREVIOUS_WORK_ENDPOINT}?title=${encodeURIComponent(searchQuery)}`
+                : BASE_PREVIOUS_WORK_ENDPOINT;
+
+
+            const response = await fetch(url, {
+                headers: {
+                    'Accept': 'application/json'
+                },
+                signal: previousWorkAbortController.signal,
+            });
+
+
+            if (!response.ok) {
+                throw new Error(
+                    'Failed to fetch previous work data'
+                );
+            }
+
+
+            const previousWorkData =
+                await response.json();
+
+
+            if (previousWorkData.length === 0) {
+
+                displayPreviousWorkSection({
+                    showEmpty: true
+                });
+
+            } else {
+
+                gridContainer.innerHTML = '';
+
+                previousWorkData.forEach(item => {
+                    gridContainer.appendChild(
+                        buildPreviousWorkCardElement(item)
+                    );
+                });
+
+                displayPreviousWorkSection({
+                    showGrid: true
+                });
+            }
+
+        } catch (error) {
+
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            console.error(
+                'Error loading previous work:',
+                error
+            );
+
+            displayPreviousWorkSection({
+                showError: true
+            });
+        }
+    }
+
+
+    // Search
+    function searchPreviousWorks() {
+        fetchPreviousWorks(
+            searchInput.value.trim()
+        );
+    }
+
+
+    searchInput.addEventListener(
+        'input',
+        function() {
+
+            clearTimeout(searchDebounceTimer);
+
+            searchDebounceTimer = setTimeout(
+                function() {
+                    searchPreviousWorks();
+                },
+                SEARCH_DEBOUNCE_DELAY
+            );
+        }
+    );
+
+
+    searchForm.addEventListener(
+        'submit',
+        function(event) {
+
+            event.preventDefault();
+
+            clearTimeout(searchDebounceTimer);
+
+            searchPreviousWorks();
+        }
+    );
+
+
+    // Load pertama kali
+    fetchPreviousWorks(
+        searchInput.value.trim()
+    );
+
+    const CREATE_PREVIOUS_WORK_ENDPOINT =
+    "{% url 'main:create_previous_work_ajax' %}";
+    console.log("AJAX endpoint:", CREATE_PREVIOUS_WORK_ENDPOINT);
+    const previousWorkForm = document.getElementById('previous-work-form');
+
+    // Membaca nilai cookie, digunakan untuk mengambil token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(
+                        cookie.substring(name.length + 1)
+                    );
+                    break;
+                }
+            }
+        }
+
+        return cookieValue;
+    }
+
+    // Mengirim data form ke server
+    async function addPreviousWork(event) {
+        event.preventDefault();
+
+        const submitButton = previousWorkForm.querySelector(
+            'button[type="submit"]'
+        );
+
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(
+                CREATE_PREVIOUS_WORK_ENDPOINT,
+                {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: new FormData(previousWorkForm),
+                }
+            );
+
+            const result = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                previousWorkForm.reset();
+
+                closePreviousWorkModal();
+
+                showToast(
+                    'Berhasil',
+                    'Previous work baru berhasil ditambahkan!',
+                    'success'
+                );
+
+                fetchPreviousWorks(
+                    searchInput.value.trim()
+                );
+
+            } else {
+                const errorMessages = result.errors
+                    ? Object.values(result.errors)
+                        .flat()
+                        .map(error => error.message)
+                    : [
+                        result.message ||
+                        `Terjadi kesalahan (status ${response.status}).`
+                    ];
+
+                showToast(
+                    'Gagal menambahkan previous work',
+                    errorMessages.join(' '),
+                    'error'
+                );
+            }
+
+            } catch (error) {
+            console.error('ERROR ADDING PREVIOUS WORK:', error);
+
+            showToast(
+                'Gagal menambahkan previous work',
+                error.message,
+                'error'
+            );
+
+        } finally {
+            submitButton.disabled = false;
+        }
+    }
+
+    if (previousWorkForm) {
+    previousWorkForm.addEventListener(
+        'submit',
+        addPreviousWork
+    );
+}
+
+    function closePreviousWorkModal() {
+        document
+            .getElementById("add-previous-work-modal")
+            .hidePopover();
+    }
+
+    function openDeletePreviousWorkModal(previousWorkId) {
+        const form = document.getElementById('delete-previous-work-form');
+
+        const deleteUrl =
+            "{% url 'main:delete_previous_work' 0 %}"
+            .replace('0', previousWorkId);
+
+        form.action = deleteUrl;
+        form.reset();
+
+        document
+            .getElementById('delete-previous-work-modal')
+            .showPopover();
+    }
+
+    function closeDeletePreviousWorkModal() {
+        document
+            .getElementById('delete-previous-work-modal')
+            .hidePopover();
+    }
+
+        
+    </script>
+
+    {% endblock content %}

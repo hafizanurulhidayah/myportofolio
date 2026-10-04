@@ -7,19 +7,15 @@
 {% block content %}
 
 <main>
-    <section class="previous-work-form-section">
+    <section class="experience-section">
         <div class="container">
 
-            <div class="previous-work-form-header">
-                <p class="section-kicker">
-                    Tambah pengalaman kerja/proyek
-                </p>
+            <p class="section-kicker">
+                Tambah pengalaman kerja/proyek
+            </p>
 
+            <div class="experience-header">
                 <h1>{{ page_title }}</h1>
-
-                <p>
-                    Tambahkan pekerjaan atau proyek yang pernah kamu kerjakan.
-                </p>
             </div>
 
             <form
@@ -30,7 +26,7 @@
                     action="{% url 'main:create_previous_work' %}"
                 {% endif %}
                 enctype="multipart/form-data"
-                class="previous-work-form"
+                class="experience-form"
             >
 
                 {% csrf_token %}
@@ -45,7 +41,6 @@
                     <label for="{{ form.title.id_for_label }}">
                         {{ form.title.label }}
                     </label>
-
                     {{ form.title }}
 
                     {% for error in form.title.errors %}
@@ -57,7 +52,6 @@
                     <label for="{{ form.role.id_for_label }}">
                         {{ form.role.label }}
                     </label>
-
                     {{ form.role }}
 
                     {% for error in form.role.errors %}
@@ -69,7 +63,6 @@
                     <label for="{{ form.description.id_for_label }}">
                         {{ form.description.label }}
                     </label>
-
                     {{ form.description }}
 
                     {% for error in form.description.errors %}
@@ -81,7 +74,6 @@
                     <label for="{{ form.date.id_for_label }}">
                         {{ form.date.label }}
                     </label>
-
                     {{ form.date }}
 
                     {% for error in form.date.errors %}
@@ -93,7 +85,6 @@
                     <label for="{{ form.category.id_for_label }}">
                         {{ form.category.label }}
                     </label>
-
                     {{ form.category }}
 
                     {% for error in form.category.errors %}
@@ -105,7 +96,6 @@
                     <label for="{{ form.link.id_for_label }}">
                         {{ form.link.label }}
                     </label>
-
                     {{ form.link }}
 
                     {% for error in form.link.errors %}
@@ -117,7 +107,6 @@
                     <label for="{{ form.photo.id_for_label }}">
                         {{ form.photo.label }}
                     </label>
-
                     {{ form.photo }}
 
                     {% for error in form.photo.errors %}
@@ -129,7 +118,6 @@
                     <label for="{{ form.secret.id_for_label }}">
                         {{ form.secret.label }}
                     </label>
-
                     {{ form.secret }}
 
                     {% for error in form.secret.errors %}

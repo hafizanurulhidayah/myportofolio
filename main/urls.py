@@ -27,6 +27,7 @@ from main.views import (
     show_profile,
     create_experience_ajax,
     create_education_ajax,
+    create_previous_work_ajax,
 )
 
 app_name = "main"
@@ -56,5 +57,6 @@ urlpatterns = [
     path("profile/<str:username>/",show_profile,name="show_profile"),
     path("experience/add-ajax/", create_experience_ajax, name="create_experience_ajax"),
     path("education/add-ajax/", create_education_ajax, name="create_education_ajax"),
+    path("PreviousWork/add-ajax/",create_previous_work_ajax,name="create_previous_work_ajax",),
 
 ]
