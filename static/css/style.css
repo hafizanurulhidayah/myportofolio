@@ -2865,3 +2865,50 @@ a{ color: inherit; text-decoration: none; }
 .hide {
     display: none !important;
 }
+
+/* experience form edit */
+.experience-edit-form {
+    width: min(100%, 700px);
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--white);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+}
+
+.experience-edit-form p {
+    margin-bottom: 1rem;
+}
+
+.experience-edit-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.experience-edit-form input,
+.experience-edit-form textarea,
+.experience-edit-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--ink);
+    border-radius: 8px;
+    background: var(--white);
+    font: inherit;
+}
+
+.experience-edit-form textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.experience-edit-form input:focus,
+.experience-edit-form textarea:focus,
+.experience-edit-form select:focus {
+    outline: 2px solid var(--pink);
+    border-color: var(--pink);
+}
+
+.experience-edit-form .button {
+    margin-top: 0.5rem;
+}

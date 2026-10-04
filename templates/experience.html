@@ -121,8 +121,9 @@
                 // Konfigurasi
                 const BASE_EXPERIENCE_ENDPOINT = "{% url 'main:get_experience_json' %}";
                 const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+                const CAN_EDIT_EXPERIENCE ="{{ perms.main.change_experience|yesno:'true,false' }}" === "true";
                 let experiencesAbortController;
-
+                
                 // Elemen DOM
                 const loadingState = document.getElementById('loading');
                 const errorState = document.getElementById('error');
@@ -220,6 +221,18 @@
                         </button>`
                         : '';
 
+                    const editUrl = "{% url 'main:update_experience' '00000000-0000-0000-0000-000000000000' %}"
+                    .replace(
+                        '00000000-0000-0000-0000-000000000000',
+                        experienceId
+                    );
+
+                    const editHtml = CAN_EDIT_EXPERIENCE
+                    ? `<a href="${editUrl}" class="button button-edit">
+                            Edit
+                    </a>`
+                    : '';
+
                     const completeCardHtml = `
                         <h2>${escapeHtml(experience.title)}</h2>
 
@@ -235,6 +248,8 @@
                             <div class="experience-actions">
 
                                 ${urlHtml}
+
+                                ${editHtml}
 
                                 <form method="post"
                                     action="${escapeHtml(starUrl)}"
