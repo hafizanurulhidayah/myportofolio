@@ -114,6 +114,39 @@ def toggle_star_experience(request, experience_id):
 
     return redirect("main:show_experience")
 
+@require_POST
+@login_required(login_url="/login/")
+def toggle_star_experience_ajax(request, experience_id):
+    experience = get_object_or_404(
+        Experience,
+        pk=experience_id
+    )
+
+    if request.user in experience.starred_by.all():
+        experience.starred_by.remove(request.user)
+        starred = False
+    else:
+        experience.starred_by.add(request.user)
+        starred = True
+
+    total_starred = (
+        request.user.starred_experience.count()
+        + request.user.starred_education.count()
+        + request.user.starred_previouswork.count()
+    )
+
+    achievement = None
+
+    if starred:
+        achievement = get_star_achievement(total_starred)
+
+    return JsonResponse({
+        "starred": starred,
+        "star_count": experience.starred_by.count(),
+        "total_starred": total_starred,
+        "achievement": achievement,
+    })
+
 
 @login_required(login_url="/login/")
 def toggle_star_education(request, education_id):
@@ -810,3 +843,33 @@ def create_previous_work_ajax(request):
         },
         status=400,
     )
+
+# kreativitas menambahkan badge achievement notifikasi buat pemberian bintang di jumlah tertentu 
+def get_star_achievement(total_starred):
+    if total_starred >= 50:
+        return {
+            "name": "Star Master",
+            "message": "You earned the Star Master achievement!"
+        }
+    elif total_starred >= 20:
+        return {
+            "name": "Star Enthusiast",
+            "message": "You earned the Star Enthusiast achievement!"
+        }
+    elif total_starred >= 10:
+        return {
+            "name": "Rising Star",
+            "message": "You earned the Rising Star achievement!"
+        }
+    elif total_starred >= 5:
+        return {
+            "name": "Star Collector",
+            "message": "You earned the Star Collector achievement!"
+        }
+    elif total_starred >= 1:
+        return {
+            "name": "First Star",
+            "message": "You earned your first star!"
+        }
+
+    return None

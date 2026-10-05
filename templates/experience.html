@@ -191,11 +191,7 @@
                         </a>`
                         : '';
 
-                    const starUrl = "{% url 'main:toggle_star_experience' '00000000-0000-0000-0000-000000000000' %}"
-                        .replace(
-                            '00000000-0000-0000-0000-000000000000',
-                            experienceId
-                        );
+                  const starAjaxUrl = `/experience/${experienceId}/star-ajax/`;
 
                     const isStarredClass = experience.is_starred
                         ? " is-starred"
@@ -253,19 +249,18 @@
 
                                 ${editHtml}
 
-                                <form method="post"
-                                    action="${escapeHtml(starUrl)}"
-                                    class="star-form">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="button button-star${isStarredClass}"
-                                            title="${starTitle}">
-                                        <span aria-hidden="true">★</span>
-                                        ${starText}
-                                        <span class="star-count">
-                                            ${escapeHtml(experience.star_count)}
-                                        </span>
-                                    </button>
+                              <button
+                                type="button"
+                                class="button button-star${isStarredClass}"
+                                onclick="toggleExperienceStar('${experienceId}', this)"
+                            >
+                                <span aria-hidden="true">★</span>
+                                ${starText}
+                                <span class="star-count">
+                                    ${escapeHtml(experience.star_count)}
+                                </span>
+                            </button>
+
                                 </form>
 
                                 ${deleteHtml}
@@ -284,6 +279,95 @@
 
                     return articleElement;
                 }
+
+                // for creativity
+                async function toggleExperienceStar(experienceId, button) {
+                const url = `/experience/${experienceId}/star-ajax/`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            result.message || 'Gagal memberikan star.'
+                        );
+                    }
+
+                    button.classList.toggle(
+                        'is-starred',
+                        result.starred
+                    );
+
+                    button.innerHTML = `
+                        <span aria-hidden="true">★</span>
+                        ${result.starred ? 'Unstar' : 'Star'}
+                        <span class="star-count">
+                            ${result.star_count}
+                        </span>
+                    `;
+
+                    if (result.achievement) {
+                        showAchievementToast(result.achievement);
+                    }
+
+                } catch (error) {
+                    console.error('Error toggling star:', error);
+
+                    showToast(
+                        'Gagal',
+                        error.message,
+                        'error'
+                    );
+                }
+            }
+                function showAchievementToast(achievement) {
+                    const toast = document.createElement('div');
+
+                    toast.className = 'achievement-toast';
+
+                    toast.innerHTML = `
+                        <div class="achievement-toast__icon">
+                            ★
+                        </div>
+
+                        <div>
+                            <p class="achievement-toast__label">
+                                ACHIEVEMENT UNLOCKED
+                            </p>
+
+                            <h3>
+                                ${achievement.name}
+                            </h3>
+
+                            <p>
+                                ${achievement.message}
+                            </p>
+                        </div>
+                    `;
+
+                    document.body.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.classList.add('show');
+                    }, 10);
+
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 300);
+                    }, 3500);
+                }
+
 
                 // Fetch data experience
                 async function fetchExperiences(searchQuery = "") {
