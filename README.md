@@ -181,7 +181,7 @@ Data JSON dapat digunakan untuk mengakses data portfolio tanpa mengubah data ter
 Pembatasan akses diterapkan pada dua sisi:
 
 ### TUGAS 5
-Pada Tugas 5, dilakukan pengembangan fitur pada halaman Experience, Education, dan Previous Work dengan menerapkan AJAX untuk mengambil dan menambahkan data secara dinamis tanpa perlu melakukan reload halaman.
+Pada Tugas 5, dilakukan pengembangan fitur pada halaman Experience, Education, dan Previous Work dengan menerapkan AJAX untuk mengambil dan menambahkan data secara dinamis tanpa perlu melakukan reload halaman. Saya juga menambahkan kreativitas yaitu melanjutkan tugas 4 dimana pada tugas 4 kreativitas yang saya lakukan adalah menambah page profile, maka pada tugas ini saya menambah toast badge apabila ada pengguna baru yang berhasil menambahkan bintang pertama di kategori experience
 
 ## Perubahan yang dilakukan meliputi :
     Mengubah tampilan data Experience, Education, dan Previous Work agar dimuat menggunakan AJAX.
