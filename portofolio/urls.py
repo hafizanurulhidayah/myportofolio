@@ -14,6 +14,7 @@ urlpatterns = [
         "api/v1/",
         include(("main.api_urls", "api"), namespace="api")
     ),
+    path("api-auth/", include("rest_framework.urls")),
 ]
 
 urlpatterns += static(
