@@ -136,374 +136,79 @@
 {% if user.is_superuser %}
     {% include "components/previous_work_form_modal.html" %}
 {% endif %}
+{% csrf_token %}
+{% csrf_token %}
+
 <script>
-    // Konfigurasi
+    // ==========================================
+    // 1. CONFIGURATION
+    // ==========================================
+
     const BASE_PREVIOUS_WORK_ENDPOINT =
-        "{% url 'main:get_previous_work_json' %}";
+    "{% url 'api:project-list' %}";
 
-    const IS_SUPERUSER =
-        "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+    const PREVIOUS_WORK_DETAIL_TEMPLATE =
+        "{% url 'api:project-detail' 0 %}";
 
-    const CAN_EDIT_PREVIOUS_WORK =
-        "{{ perms.main.change_previouswork|yesno:'true,false' }}" === "true";
+    const PREVIOUS_WORK_STAR_TEMPLATE =
+        "{% url 'api:project-star' 0 %}";
 
-    let previousWorkAbortController;
+    const UPDATE_PREVIOUS_WORK_TEMPLATE =
+        "{% url 'main:update_previous_work' 0 %}";
 
-    const SEARCH_DEBOUNCE_DELAY = 300;
-    let searchDebounceTimer;
+    const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
+    const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
 
-    // Elemen DOM
-    const loadingState =
-        document.getElementById('previous-work-loading');
+    // ==========================================
+    // 2. GET HTML ELEMENTS
+    // ==========================================
 
-    const errorState =
-        document.getElementById('previous-work-error');
+    const loadingElement =
+        document.getElementById("previous-work-loading");
 
-    const emptyState =
-        document.getElementById('previous-work-empty');
+    const errorElement =
+        document.getElementById("previous-work-error");
 
-    const gridContainer =
-        document.getElementById('previous-work-grid');
+    const emptyElement =
+        document.getElementById("previous-work-empty");
+
+    const gridElement =
+        document.getElementById("previous-work-grid");
 
     const searchForm =
-        document.getElementById('previous-work-search-form');
+        document.getElementById("previous-work-search-form");
 
     const searchInput =
-        document.getElementById('previous-work-search-input');
+        document.getElementById("previous-work-search-input");
 
+    const addModal =
+        document.getElementById("add-previous-work-modal");
 
-    // Escape HTML untuk mencegah XSS
-    function escapeHtml(value) {
-        return String(value ?? '')
-            .replaceAll('&', '&amp;')
-            .replaceAll('<', '&lt;')
-            .replaceAll('>', '&gt;')
-            .replaceAll('"', '&quot;')
-            .replaceAll("'", '&#39;');
-    }
+    const previousWorkForm =
+        document.getElementById("previous-work-form");
 
+    const deleteModal =
+        document.getElementById("delete-previous-work-modal");
 
-    // Menampilkan / menyembunyikan state
-    function displayPreviousWorkSection({
-        showLoading = false,
-        showError = false,
-        showEmpty = false,
-        showGrid = false
-    }) {
-        loadingState.classList.toggle('hide', !showLoading);
-        errorState.classList.toggle('hide', !showError);
-        emptyState.classList.toggle('hide', !showEmpty);
-        gridContainer.classList.toggle('hide', !showGrid);
-    }
+    const deleteForm =
+        document.getElementById("delete-previous-work-form");
 
-    function openDeletePreviousWorkModal(previousWorkId) {
-    const form = document.getElementById(
-        'delete-previous-work-form'
-    );
 
-    const deleteUrl =
-        "{% url 'main:delete_previous_work' 0 %}"
-        .replace('0', previousWorkId);
+    // ==========================================
+    // 3. HELPER FUNCTIONS
+    // ==========================================
 
-    form.action = deleteUrl;
-
-    form.reset();
-
-    document
-        .getElementById('delete-previous-work-modal')
-        .showPopover();
-}
-
-
-    // Membuat card Previous Work
-    function buildPreviousWorkCardElement(item) {
-        const work = item.fields;
-        const workId = item.pk;
-
-        const articleElement =
-            document.createElement('article');
-
-        articleElement.className = 'previous-work-card';
-
-
-        // Photo
-        const photoHtml = work.photo
-            ? `
-                <img
-                    src="${escapeHtml(work.photo)}"
-                    alt="Dokumentasi ${escapeHtml(work.title)}"
-                    class="previous-work-image"
-                >
-              `
-            : '';
-
-
-        // Detail link
-        const linkHtml = work.link
-            ? `
-                <a
-                    href="${escapeHtml(work.link)}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="button button-detail"
-                >
-                    Lihat Detail
-                </a>
-              `
-            : '';
-
-
-        // Star URL
-        const starUrl =
-            "{% url 'main:toggle_star_previouswork' 0 %}"
-            .replace('0', workId);
-
-
-        const isStarredClass =
-            work.is_starred ? " is-starred" : "";
-
-        const starText =
-            work.is_starred ? "Unstar" : "Star";
-
-        const starTitle =
-            work.star_count > 0
-                ? `Dibintangi oleh ${escapeHtml(work.starred_by_names)}`
-                : "Jadilah yang pertama memberi star";
-
-
-        // Edit
-        const editUrl =
-            "{% url 'main:update_previous_work' 0 %}"
-            .replace('0', workId);
-
-        const editHtml = CAN_EDIT_PREVIOUS_WORK
-            ? `
-                <a
-                    href="${editUrl}"
-                    class="button button-edit"
-                >
-                    Edit
-                </a>
-              `
-            : '';
-
-
-        // Delete
-        const deleteUrl =
-            "{% url 'main:delete_previous_work' 0 %}"
-            .replace('0', workId);
-
-        // Delete
-       const deleteHtml = IS_SUPERUSER
-        ? `<button type="button"
-                class="button button-danger"
-                onclick="openDeletePreviousWorkModal('${workId}')">
-                Hapus
-        </button>`
-        : '';
-
-        // Card
-        const completeCardHtml = `
-            ${photoHtml}
-
-            <div class="previous-work-content">
-
-                <span class="previous-work-category">
-                    ${escapeHtml(work.category)}
-                </span>
-
-                <h2>
-                    ${escapeHtml(work.title)}
-                </h2>
-
-                <p class="previous-work-role">
-                    ${escapeHtml(work.role)}
-                </p>
-
-                <p class="previous-work-description">
-                    ${escapeHtml(work.description)}
-                </p>
-
-                <p class="previous-work-date">
-                    ${escapeHtml(work.date)}
-                </p>
-
-                <div class="previous-work-actions">
-
-                    ${linkHtml}
-
-                    ${editHtml}
-
-                    <form
-                        method="post"
-                        action="${starUrl}"
-                        class="star-form"
-                    >
-                        {% csrf_token %}
-
-                        <button
-                            type="submit"
-                            class="button button-star${isStarredClass}"
-                            title="${starTitle}"
-                        >
-                            <span aria-hidden="true">★</span>
-                            ${starText}
-                            <span class="star-count">
-                                ${escapeHtml(work.star_count)}
-                            </span>
-                        </button>
-                    </form>
-
-                    ${deleteHtml}
-
-                </div>
-            </div>
-        `;
-
-        articleElement.innerHTML = completeCardHtml;
-
-        return articleElement;
-    }
-
-
-    // Fetch Previous Work
-    async function fetchPreviousWorks(searchQuery = "") {
-
-        if (previousWorkAbortController) {
-            previousWorkAbortController.abort();
-        }
-
-        previousWorkAbortController =
-            new AbortController();
-
-        try {
-            displayPreviousWorkSection({
-                showLoading: true
-            });
-
-
-            const url = searchQuery
-                ? `${BASE_PREVIOUS_WORK_ENDPOINT}?title=${encodeURIComponent(searchQuery)}`
-                : BASE_PREVIOUS_WORK_ENDPOINT;
-
-
-            const response = await fetch(url, {
-                headers: {
-                    'Accept': 'application/json'
-                },
-                signal: previousWorkAbortController.signal,
-            });
-
-
-            if (!response.ok) {
-                throw new Error(
-                    'Failed to fetch previous work data'
-                );
-            }
-
-
-            const previousWorkData =
-                await response.json();
-
-
-            if (previousWorkData.length === 0) {
-
-                displayPreviousWorkSection({
-                    showEmpty: true
-                });
-
-            } else {
-
-                gridContainer.innerHTML = '';
-
-                previousWorkData.forEach(item => {
-                    gridContainer.appendChild(
-                        buildPreviousWorkCardElement(item)
-                    );
-                });
-
-                displayPreviousWorkSection({
-                    showGrid: true
-                });
-            }
-
-        } catch (error) {
-
-            if (error.name === 'AbortError') {
-                return;
-            }
-
-            console.error(
-                'Error loading previous work:',
-                error
-            );
-
-            displayPreviousWorkSection({
-                showError: true
-            });
-        }
-    }
-
-
-    // Search
-    function searchPreviousWorks() {
-        fetchPreviousWorks(
-            searchInput.value.trim()
-        );
-    }
-
-
-    searchInput.addEventListener(
-        'input',
-        function() {
-
-            clearTimeout(searchDebounceTimer);
-
-            searchDebounceTimer = setTimeout(
-                function() {
-                    searchPreviousWorks();
-                },
-                SEARCH_DEBOUNCE_DELAY
-            );
-        }
-    );
-
-
-    searchForm.addEventListener(
-        'submit',
-        function(event) {
-
-            event.preventDefault();
-
-            clearTimeout(searchDebounceTimer);
-
-            searchPreviousWorks();
-        }
-    );
-
-
-    // Load pertama kali
-    fetchPreviousWorks(
-        searchInput.value.trim()
-    );
-
-    const CREATE_PREVIOUS_WORK_ENDPOINT =
-    "{% url 'main:create_previous_work_ajax' %}";
-    console.log("AJAX endpoint:", CREATE_PREVIOUS_WORK_ENDPOINT);
-    const previousWorkForm = document.getElementById('previous-work-form');
-
-    // Membaca nilai cookie, digunakan untuk mengambil token CSRF
     function getCookie(name) {
         let cookieValue = null;
 
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
 
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
+            for (let cookie of cookies) {
+                cookie = cookie.trim();
 
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                if (cookie.startsWith(name + "=")) {
                     cookieValue = decodeURIComponent(
                         cookie.substring(name.length + 1)
                     );
@@ -515,111 +220,703 @@
         return cookieValue;
     }
 
-    // Mengirim data form ke server
-    async function addPreviousWork(event) {
-        event.preventDefault();
 
-        const submitButton = previousWorkForm.querySelector(
-            'button[type="submit"]'
-        );
+    function escapeHtml(value) {
+        return String(value ?? "").replace(
+            /[&<>"']/g,
+            function (character) {
+                const entities = {
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#039;"
+                };
 
-        submitButton.disabled = true;
-
-        try {
-            const response = await fetch(
-                CREATE_PREVIOUS_WORK_ENDPOINT,
-                {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: new FormData(previousWorkForm),
-                }
-            );
-
-            const result = await response.json().catch(() => ({}));
-
-            if (response.ok) {
-                previousWorkForm.reset();
-
-                closePreviousWorkModal();
-
-                showToast(
-                    'Berhasil',
-                    'Previous work baru berhasil ditambahkan!',
-                    'success'
-                );
-
-                fetchPreviousWorks(
-                    searchInput.value.trim()
-                );
-
-            } else {
-                const errorMessages = result.errors
-                    ? Object.values(result.errors)
-                        .flat()
-                        .map(error => error.message)
-                    : [
-                        result.message ||
-                        `Terjadi kesalahan (status ${response.status}).`
-                    ];
-
-                showToast(
-                    'Gagal menambahkan previous work',
-                    errorMessages.join(' '),
-                    'error'
-                );
+                return entities[character];
             }
+        );
+    }
 
-            } catch (error) {
-            console.error('ERROR ADDING PREVIOUS WORK:', error);
 
-            showToast(
-                'Gagal menambahkan previous work',
-                error.message,
-                'error'
-            );
+    function previousWorkDetailEndpoint(previousWorkId) {
+        return PREVIOUS_WORK_DETAIL_TEMPLATE.replace(
+            "/0/",
+            `/${previousWorkId}/`
+        );
+    }
 
-        } finally {
-            submitButton.disabled = false;
+
+    function previousWorkStarEndpoint(previousWorkId) {
+        return PREVIOUS_WORK_STAR_TEMPLATE.replace(
+            "/0/",
+            `/${previousWorkId}/`
+        );
+    }
+
+
+    function updatePreviousWorkEndpoint(previousWorkId) {
+        return UPDATE_PREVIOUS_WORK_TEMPLATE.replace(
+            "/0/",
+            `/${previousWorkId}/`
+        );
+    }
+
+
+    function showNotification(message) {
+        if (typeof showToast === "function") {
+            showToast(message);
+        } else {
+            alert(message);
         }
     }
 
-    if (previousWorkForm) {
-    previousWorkForm.addEventListener(
-        'submit',
-        addPreviousWork
-    );
-}
 
-    function closePreviousWorkModal() {
-        document
-            .getElementById("add-previous-work-modal")
-            .hidePopover();
+    async function getResponseData(response) {
+        if (response.status === 204) {
+            return null;
+        }
+
+        return await response.json().catch(() => ({}));
     }
+
+
+    function getErrorMessage(data) {
+        if (!data) {
+            return "Terjadi kesalahan. Silakan coba lagi.";
+        }
+
+        if (data.message) {
+            return data.message;
+        }
+
+        if (data.detail) {
+            return data.detail;
+        }
+
+        if (data.errors) {
+            return JSON.stringify(data.errors);
+        }
+
+        return "Terjadi kesalahan. Silakan coba lagi.";
+    }
+
+
+    // ==========================================
+    // 4. LOADING, ERROR, EMPTY STATE
+    // ==========================================
+
+    function displayPageSection(section, message = "") {
+        if (loadingElement) {
+            loadingElement.hidden = section !== "loading";
+        }
+
+        if (errorElement) {
+            errorElement.hidden = section !== "error";
+            errorElement.textContent = message;
+        }
+
+        if (emptyElement) {
+            emptyElement.hidden = section !== "empty";
+        }
+
+        if (gridElement) {
+            gridElement.hidden = section !== "grid";
+        }
+    }
+
+
+    // ==========================================
+    // 5. BUILD PREVIOUS WORK CARD
+    // ==========================================
+
+    function buildPreviousWorkCard(previousWork) {
+        const previousWorkId = previousWork.id;
+
+        const title = escapeHtml(previousWork.title);
+        const role = escapeHtml(previousWork.role);
+        const description = escapeHtml(previousWork.description);
+        const category = escapeHtml(previousWork.category);
+        const date = escapeHtml(previousWork.date);
+
+        // Nama field berikut mengikuti serializer API.
+        const previousWorkImageUrl =
+            previousWork.project_image_url;
+
+        const previousWorkUrl =
+            previousWork.project_url;
+
+        const starCount = Number(
+            previousWork.star_count || 0
+        );
+
+        const isStarred = Boolean(
+            previousWork.is_starred
+        );
+
+        const starredByNames = escapeHtml(
+            previousWork.starred_by_names || ""
+        );
+
+
+        const article = document.createElement("article");
+
+        article.className = "previous-work-card";
+
+
+        // Previous Work image
+        const imageHTML = previousWorkImageUrl
+            ? `
+                <img
+                    src="${escapeHtml(previousWorkImageUrl)}"
+                    alt="${title}"
+                    class="previous-work-image"
+                    loading="lazy"
+                >
+            `
+            : "";
+
+
+        // External link
+        const previousWorkLinkHTML = previousWorkUrl
+            ? `
+                <a
+                    href="${escapeHtml(previousWorkUrl)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="previous-work-link"
+                >
+                    View Project
+                </a>
+            `
+            : "";
+
+
+        // Edit button
+        const editButtonHTML = CAN_EDIT_PREVIOUS_WORK
+            ? `
+                <a
+                    href="${updatePreviousWorkEndpoint(previousWorkId)}"
+                    class="button button-edit"
+                >
+                    Edit
+                </a>
+            `
+            : "";
+
+
+        // Delete button
+        const deleteButtonHTML = IS_SUPERUSER
+            ? `
+                <button
+                    type="button"
+                    class="button button-delete"
+                    data-action="delete"
+                    data-id="${previousWorkId}"
+                >
+                    Delete
+                </button>
+            `
+            : "";
+
+
+        // Star button
+        const starButtonHTML = IS_AUTHENTICATED
+            ? `
+                <button
+                    type="button"
+                    class="button button-star ${isStarred ? "is-starred" : ""}"
+                    data-action="star"
+                    data-id="${previousWorkId}"
+                    title="${starredByNames}"
+                >
+                    ★
+                    <span class="star-count">${starCount}</span>
+                </button>
+            `
+            : `
+                <a
+                    href="{% url 'main:login' %}"
+                    class="button button-star"
+                >
+                    ★ ${starCount}
+                </a>
+            `;
+
+
+        article.innerHTML = `
+            ${imageHTML}
+
+            <div class="previous-work-card-content">
+
+                <span class="previous-work-category">
+                    ${category}
+                </span>
+
+                <h3 class="previous-work-title">
+                    ${title}
+                </h3>
+
+                <p class="previous-work-role">
+                    ${role}
+                </p>
+
+                <p class="previous-work-description">
+                    ${description}
+                </p>
+
+                <p class="previous-work-date">
+                    ${date}
+                </p>
+
+                <div class="previous-work-card-actions">
+                    ${previousWorkLinkHTML}
+                    ${starButtonHTML}
+                    ${editButtonHTML}
+                    ${deleteButtonHTML}
+                </div>
+
+            </div>
+        `;
+
+        return article;
+    }
+
+
+    // ==========================================
+    // 6. FETCH PREVIOUS WORK DATA
+    // ==========================================
+
+    let currentSearchController = null;
+
+    async function fetchPreviousWorks() {
+        if (!gridElement) {
+            return;
+        }
+
+        if (currentSearchController) {
+            currentSearchController.abort();
+        }
+
+        currentSearchController = new AbortController();
+
+        displayPageSection("loading");
+
+        const searchQuery = searchInput
+            ? searchInput.value.trim()
+            : "";
+
+        const url = new URL(
+            BASE_PREVIOUS_WORK_ENDPOINT,
+            window.location.origin
+        );
+
+        if (searchQuery) {
+            url.searchParams.set("title", searchQuery);
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+
+                headers: {
+                    "Accept": "application/json"
+                },
+
+                credentials: "same-origin",
+
+                signal: currentSearchController.signal
+            });
+
+            const data = await getResponseData(response);
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(data));
+            }
+
+            gridElement.innerHTML = "";
+
+            if (!Array.isArray(data) || data.length === 0) {
+                displayPageSection("empty");
+                return;
+            }
+
+            data.forEach(previousWork => {
+                const previousWorkCard =
+                    buildPreviousWorkCard(previousWork);
+
+                gridElement.appendChild(previousWorkCard);
+            });
+
+            displayPageSection("grid");
+
+        } catch (error) {
+            if (error.name === "AbortError") {
+                return;
+            }
+
+            console.error(
+                "Error fetching Previous Work:",
+                error
+            );
+
+            displayPageSection(
+                "error",
+                error.message ||
+                "Gagal mengambil data Previous Work."
+            );
+        }
+    }
+
+
+    // ==========================================
+    // 7. CONVERT DJANGO FORM DATA TO API FORM DATA
+    // ==========================================
+
+    function convertFormDataToApiData(form) {
+        const originalFormData = new FormData(form);
+
+        const apiFormData = new FormData();
+
+        for (const [key, value] of originalFormData.entries()) {
+
+            // CSRF dikirim melalui request header.
+            if (key === "csrfmiddlewaretoken") {
+                continue;
+            }
+
+            // Model field "link" menjadi serializer field
+            // "project_url".
+            if (key === "link") {
+                apiFormData.append("project_url", value);
+                continue;
+            }
+
+            // Model field "photo" menjadi serializer field
+            // "project_image_url".
+            if (key === "photo") {
+                if (value instanceof File && value.name) {
+                    apiFormData.append(
+                        "project_image_url",
+                        value
+                    );
+                }
+
+                continue;
+            }
+
+            apiFormData.append(key, value);
+        }
+
+        return apiFormData;
+    }
+
+
+    // ==========================================
+    // 8. CREATE PREVIOUS WORK
+    // ==========================================
+
+    if (previousWorkForm) {
+        previousWorkForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const submitButton =
+                    previousWorkForm.querySelector(
+                        'button[type="submit"]'
+                    );
+
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+
+                try {
+                    const apiFormData =
+                        convertFormDataToApiData(previousWorkForm);
+
+                    const response = await fetch(
+                        BASE_PREVIOUS_WORK_ENDPOINT,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "X-CSRFToken": getCookie("csrftoken"),
+                                "Accept": "application/json"
+                            },
+
+                            credentials: "same-origin",
+
+                            body: apiFormData
+                        }
+                    );
+
+                    const data = await getResponseData(response);
+
+                    if (!response.ok) {
+                        throw new Error(getErrorMessage(data));
+                    }
+
+                    previousWorkForm.reset();
+
+                    if (
+                        addModal &&
+                        addModal.matches(":popover-open")
+                    ) {
+                        addModal.hidePopover();
+                    }
+
+                    showNotification(
+                        "Previous Work berhasil ditambahkan!"
+                    );
+
+                    await fetchPreviousWorks();
+
+                } catch (error) {
+                    console.error(
+                        "Error creating Previous Work:",
+                        error
+                    );
+
+                    showNotification(error.message);
+
+                } finally {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                    }
+                }
+            }
+        );
+    }
+
+
+    // ==========================================
+    // 9. OPEN DELETE MODAL
+    // ==========================================
 
     function openDeletePreviousWorkModal(previousWorkId) {
-        const form = document.getElementById('delete-previous-work-form');
+        if (!deleteModal || !deleteForm) {
+            return;
+        }
 
-        const deleteUrl =
-            "{% url 'main:delete_previous_work' 0 %}"
-            .replace('0', previousWorkId);
+        deleteForm.dataset.previousWorkId = previousWorkId;
 
-        form.action = deleteUrl;
-        form.reset();
+        deleteForm.action =
+            previousWorkDetailEndpoint(previousWorkId);
 
-        document
-            .getElementById('delete-previous-work-modal')
-            .showPopover();
+        deleteModal.showPopover();
     }
 
-    function closeDeletePreviousWorkModal() {
-        document
-            .getElementById('delete-previous-work-modal')
-            .hidePopover();
+
+    // ==========================================
+    // 10. STAR AND DELETE BUTTONS
+    // ==========================================
+
+    if (gridElement) {
+        gridElement.addEventListener(
+            "click",
+            async function (event) {
+
+                const starButton = event.target.closest(
+                    '[data-action="star"]'
+                );
+
+                const deleteButton = event.target.closest(
+                    '[data-action="delete"]'
+                );
+
+
+                // ----------------------------------
+                // STAR
+                // ----------------------------------
+
+                if (starButton) {
+                    const previousWorkId =
+                        starButton.dataset.id;
+
+                    starButton.disabled = true;
+
+                    try {
+                        const response = await fetch(
+                            previousWorkStarEndpoint(previousWorkId),
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "X-CSRFToken": getCookie("csrftoken"),
+                                    "Accept": "application/json"
+                                },
+
+                                credentials: "same-origin"
+                            }
+                        );
+
+                        const data = await getResponseData(response);
+
+                        if (!response.ok) {
+                            throw new Error(getErrorMessage(data));
+                        }
+
+                        await fetchPreviousWorks();
+
+                    } catch (error) {
+                        console.error(
+                            "Error toggling Previous Work star:",
+                            error
+                        );
+
+                        showNotification(error.message);
+
+                    } finally {
+                        starButton.disabled = false;
+                    }
+
+                    return;
+                }
+
+
+                // ----------------------------------
+                // DELETE
+                // ----------------------------------
+
+                if (deleteButton) {
+                    const previousWorkId =
+                        deleteButton.dataset.id;
+
+                    openDeletePreviousWorkModal(previousWorkId);
+                }
+            }
+        );
     }
 
-        
-    </script>
+
+    // ==========================================
+    // 11. DELETE PREVIOUS WORK
+    // ==========================================
+
+    if (deleteForm) {
+        deleteForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+                const previousWorkId =
+                    deleteForm.dataset.previousWorkId;
+
+                if (!previousWorkId) {
+                    showNotification(
+                        "Previous Work yang akan dihapus tidak ditemukan."
+                    );
+                    return;
+                }
+
+                const submitButton =
+                    deleteForm.querySelector(
+                        'button[type="submit"]'
+                    );
+
+                if (submitButton) {
+                    submitButton.disabled = true;
+                }
+
+                try {
+                    const deleteFormData =
+                        new FormData(deleteForm);
+
+                    const response = await fetch(
+                        previousWorkDetailEndpoint(previousWorkId),
+                        {
+                            method: "DELETE",
+
+                            headers: {
+                                "X-CSRFToken": getCookie("csrftoken"),
+                                "Accept": "application/json"
+                            },
+
+                            credentials: "same-origin",
+
+                            body: deleteFormData
+                        }
+                    );
+
+                    const data = await getResponseData(response);
+
+                    if (!response.ok) {
+                        throw new Error(getErrorMessage(data));
+                    }
+
+                    deleteForm.reset();
+
+                    deleteModal.hidePopover();
+
+                    showNotification(
+                        "Previous Work berhasil dihapus!"
+                    );
+
+                    await fetchPreviousWorks();
+
+                } catch (error) {
+                    console.error(
+                        "Error deleting Previous Work:",
+                        error
+                    );
+
+                    showNotification(error.message);
+
+                } finally {
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                    }
+                }
+            }
+        );
+    }
+
+
+    // ==========================================
+    // 12. SEARCH WITH DEBOUNCE
+    // ==========================================
+
+    let searchTimeout = null;
+
+    if (searchInput) {
+        searchInput.addEventListener(
+            "input",
+            function () {
+
+                clearTimeout(searchTimeout);
+
+                searchTimeout = setTimeout(
+                    fetchPreviousWorks,
+                    300
+                );
+            }
+        );
+    }
+
+    if (searchForm) {
+        searchForm.addEventListener(
+            "submit",
+            function (event) {
+
+                event.preventDefault();
+
+                clearTimeout(searchTimeout);
+
+                fetchPreviousWorks();
+            }
+        );
+    }
+
+
+    // ==========================================
+    // 13. INITIAL LOAD
+    // ==========================================
+
+    fetchPreviousWorks();
+
+</script>
 
     {% endblock content %}
