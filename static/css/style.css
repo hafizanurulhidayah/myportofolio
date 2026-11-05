@@ -1814,6 +1814,11 @@ a{ color: inherit; text-decoration: none; }
     background-color: var(--green);
     color: var(--white);
 }
+
+/* =========================
+   PREVIOUS WORK CARDS
+   ========================= */
+
 /* CARD LIST */
 
 .previous-work-list {
@@ -1821,14 +1826,15 @@ a{ color: inherit; text-decoration: none; }
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2rem;
     margin-top: 2rem;
+    align-items: stretch;
 }
-
 
 /* CARD */
 
 .previous-work-card {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     overflow: hidden;
 
     background: var(--white);
@@ -1841,26 +1847,28 @@ a{ color: inherit; text-decoration: none; }
 }
 
 .previous-work-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
     box-shadow: 0 14px 30px rgba(27, 27, 27, 0.10);
-}
-
-
-.previous-work-content {
-    padding: 2rem;
 }
 
 /* PHOTO */
 
 .previous-work-image {
+    display: block;
     width: 100%;
     height: 220px;
-
     object-fit: cover;
-    display: block;
 }
 
+/* CARD CONTENT */
 
+.previous-work-card-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.5rem;
+    gap: 0.65rem;
+}
 
 /* CATEGORY */
 
@@ -1868,7 +1876,7 @@ a{ color: inherit; text-decoration: none; }
     display: inline-block;
     width: fit-content;
 
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.25rem;
     padding: 0.35rem 0.75rem;
 
     border-radius: 999px;
@@ -1880,28 +1888,163 @@ a{ color: inherit; text-decoration: none; }
     font-weight: 700;
 }
 
-
 /* TITLE */
 
-.previous-work-content h2 {
-    margin: 0 0 0.5rem;
-
+.previous-work-title {
+    margin: 0;
     color: var(--green-dark);
-
-    font-size: 1.35rem;
-    line-height: 1.3;
+    font-size: 1.3rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
 }
-
 
 /* ROLE */
 
 .previous-work-role {
-    margin: 0 0 1rem;
-
+    margin: 0;
     color: var(--pink);
-
     font-weight: 700;
     font-size: 0.95rem;
+}
+
+/* DESCRIPTION */
+
+.previous-work-description {
+    margin: 0.35rem 0;
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 0.95rem;
+    overflow-wrap: anywhere;
+}
+
+/* DATE */
+
+.previous-work-date {
+    margin: auto 0 0;
+    padding-top: 0.75rem;
+
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* CARD ACTIONS */
+
+.previous-work-card-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+
+    padding-top: 1rem;
+}
+
+/* ALL ACTION BUTTONS */
+
+.previous-work-card-actions .button,
+.previous-work-card-actions .previous-work-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+
+    width: fit-content;
+    min-height: 42px;
+    box-sizing: border-box;
+
+    margin: 0;
+    padding: 0.65rem 1rem;
+
+    border: 0;
+    border-radius: var(--radius);
+
+    background: var(--green-dark);
+    color: var(--white);
+
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.previous-work-card-actions .button:hover,
+.previous-work-card-actions .previous-work-link:hover {
+    background: var(--green);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+/* STAR BUTTON */
+
+.previous-work-card-actions .button-star {
+    background: var(--green-dark);
+}
+
+.previous-work-card-actions .button-star.is-starred {
+    background: var(--pink);
+}
+
+/* DELETE BUTTON */
+
+.previous-work-card-actions .button-delete {
+    background: var(--pink);
+}
+
+.previous-work-card-actions .button-delete:hover {
+    background: #d94b83;
+}
+
+/* STAR COUNT */
+
+.previous-work-card-actions .star-count {
+    font-size: 0.8rem;
+}
+
+/* EMPTY STATE */
+
+.empty-state {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .previous-work-list {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .previous-work-section {
+        padding: 72px 6vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .previous-work-card-content {
+        padding: 1.15rem;
+    }
+
+    .previous-work-image {
+        height: 190px;
+    }
+
+    .previous-work-title {
+        font-size: 1.15rem;
+    }
+
+    .previous-work-card-actions {
+        gap: 0.5rem;
+    }
+
+    .previous-work-card-actions .button,
+    .previous-work-card-actions .previous-work-link {
+        padding: 0.6rem 0.75rem;
+        font-size: 0.8rem;
+    }
 }
 
 /* =========================

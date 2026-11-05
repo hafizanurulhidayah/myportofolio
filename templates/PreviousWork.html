@@ -70,7 +70,8 @@
 
             <!-- Previous Work Grid -->
             <div id="previous-work-grid"
-                 class="previous-work-list hide">
+                 class="previous-work-list"
+                 hidden>
             </div>
 
         </div>
@@ -158,6 +159,7 @@
 
     const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
     const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+    const CAN_EDIT_PREVIOUS_WORK = IS_SUPERUSER;
 
 
     // ==========================================
@@ -187,6 +189,7 @@
 
     const previousWorkForm =
         document.getElementById("previous-work-form");
+        
 
     const deleteModal =
         document.getElementById("delete-previous-work-modal");
@@ -529,7 +532,6 @@
             });
 
             const data = await getResponseData(response);
-
             if (!response.ok) {
                 throw new Error(getErrorMessage(data));
             }
@@ -621,6 +623,7 @@
             "submit",
             async function (event) {
 
+                
                 event.preventDefault();
 
                 const submitButton =
@@ -689,6 +692,8 @@
             }
         );
     }
+   
+    
 
 
     // ==========================================
