@@ -239,14 +239,22 @@ def show_previous_work(request):
 def show_education(request):
     title_query = request.GET.get("title", "").strip()
 
+    can_edit_education = (
+        request.user.is_authenticated
+        and (
+            request.user.is_superuser
+            or request.user.groups.filter(name="Editor").exists()
+        )
+    )
+
     context = {
         "name": "Hafiza Nurul Hidayah",
         "title_query": title_query,
         "form": EducationForm(),
+        "can_edit_education": can_edit_education,
     }
 
     return render(request, "education.html", context)
-
 
 @login_required(login_url="/login/") 
 def delete_experience(request, experience_id):

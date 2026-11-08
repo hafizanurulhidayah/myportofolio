@@ -13,19 +13,23 @@
                 Background pendidikan saya sejauh ini
             </p>
 
-            <div class="education-header">
-                <h1>Education</h1>
-                
-                {% if user.is_superuser %} 
-                {% include "components/education_form_modal.html" %}
-                <button type="button"
-                class="button education-add-button"
-                popovertarget="add-education-modal">
-                <span aria-hidden="true">+</span>
-                Tambah Education Background
-            </button>
-                {% endif %}    
-            </div>
+           <div class="education-header">
+                    <h1>Education</h1>
+
+                    {% if can_edit_education %}
+                        {% include "components/education_form_modal.html" %}
+                    {% endif %}
+
+                    {% if user.is_superuser %}
+                        <button type="button"
+                                class="button education-add-button"
+                                popovertarget="add-education-modal">
+                            <span aria-hidden="true">+</span>
+                            Tambah Education Background
+                        </button>
+                    {% endif %}
+                </div>
+                    
 
             <form id="education-search-form" class="education-search">
             <input type="search"
@@ -133,12 +137,16 @@
         "{{ user.is_superuser|yesno:'true,false' }}" === "true";
 
     const CAN_EDIT_EDUCATION =
-        "{{ perms.main.change_education|yesno:'true,false' }}" === "true";
+    "{{ can_edit_education|yesno:'true,false' }}" === "true";
 
     const IS_AUTHENTICATED =
         "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
     const SEARCH_DEBOUNCE_DELAY = 300;
+
+    const EDUCATION_DETAIL_TEMPLATE = "{% url 'api:education-detail' 0 %}";
+
+    let editingEducationId = null;
 
     let educationAbortController;
     let searchDebounceTimer;
@@ -157,11 +165,18 @@
     const searchInput = document.getElementById('education-search-input');
 
     const educationForm = document.getElementById('education-form');
+    const deleteEducationForm = document.getElementById(
+    'delete-education-form'
+);
 
 
     // ==========================================
     // HELPER FUNCTIONS
     // ==========================================
+
+    function educationDetailEndpoint(educationId) {
+    return EDUCATION_DETAIL_TEMPLATE.replace('/0/', `/${educationId}/`);
+}
 
     function getCookie(name) {
         let cookieValue = null;
@@ -224,8 +239,7 @@
     function openDeleteEducationModal(educationId) {
         const form = document.getElementById('delete-education-form');
 
-        const deleteUrl = "{% url 'main:delete_education' 0 %}"
-            .replace('/0/', `/${educationId}/`);
+       const deleteUrl = educationDetailEndpoint(educationId);
 
         form.action = deleteUrl;
         form.reset();
@@ -263,13 +277,18 @@
         const editUrl = "{% url 'main:update_education' 0 %}"
             .replace('/0/', `/${educationId}/`);
 
-        const editHtml = CAN_EDIT_EDUCATION
+       const editHtml = CAN_EDIT_EDUCATION
             ? `
-                <a href="${editUrl}" class="button button-edit">
+                <button
+                    type="button"
+                    class="button button-edit"
+                    data-action="edit"
+                    data-id="${educationId}"
+                >
                     Edit
-                </a>
+                </button>
             `
-            : '';
+        : '';
 
 
         // Delete button
@@ -424,6 +443,62 @@
         }
     }
 
+    // ==========================================
+// EDIT EDUCATION (DRF API)
+// ==========================================
+
+async function editEducation(educationId) {
+    try {
+        const response = await fetch(
+            educationDetailEndpoint(educationId),
+            {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Gagal mengambil detail education.');
+        }
+
+        const education = await response.json();
+
+        document.getElementById('id_institution').value =
+            education.institution;
+
+        document.getElementById('id_degree').value =
+            education.degree;
+
+        document.getElementById('id_year').value =
+            education.year;
+
+        document.getElementById('id_achievements').value =
+            education.achievements;
+
+        editingEducationId = educationId;
+
+        document.getElementById('add-education-modal-title').textContent =
+            'Edit Education';
+
+        document.getElementById('education-submit-button').textContent =
+            'Simpan Perubahan';
+
+        document
+            .getElementById('add-education-modal')
+            .showPopover();
+
+    } catch (error) {
+        console.error('Error loading education detail:', error);
+
+        showToast(
+            'Gagal',
+            error.message,
+            'error'
+        );
+    }
+}
 
     // ==========================================
     // SEARCH EDUCATION
@@ -499,6 +574,88 @@
         }
     }
 
+    // ==========================================
+// DELETE EDUCATION (DRF API)
+// ==========================================
+
+async function deleteEducation(event) {
+    event.preventDefault();
+
+    const submitButton = deleteEducationForm.querySelector(
+        'button[type="submit"]'
+    );
+
+    const educationId = new URL(deleteEducationForm.action).pathname
+        .split('/')
+        .filter(Boolean)
+        .pop();
+
+    const secret = document.getElementById(
+        'delete-education-secret'
+    ).value;
+
+    submitButton.disabled = true;
+
+    try {
+        const response = await fetch(
+            educationDetailEndpoint(educationId),
+            {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    secret: secret
+                })
+            }
+        );
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            throw new Error(
+                result.detail ||
+                `Gagal menghapus education (status ${response.status}).`
+            );
+        }
+
+        deleteEducationForm.reset();
+
+        document
+            .getElementById('delete-education-modal')
+            .hidePopover();
+
+        showToast(
+            'Berhasil',
+            'Education berhasil dihapus!',
+            'success'
+        );
+
+        fetchEducations(searchInput.value.trim());
+
+    } catch (error) {
+        console.error('Error deleting education:', error);
+
+        showToast(
+            'Gagal menghapus education',
+            error.message,
+            'error'
+        );
+
+    } finally {
+        submitButton.disabled = false;
+    }
+}
+
+if (deleteEducationForm) {
+    deleteEducationForm.addEventListener(
+        'submit',
+        deleteEducation
+    );
+}
+
 
     // Event delegation untuk tombol star dan delete.
     gridContainer.addEventListener('click', function(event) {
@@ -515,6 +672,10 @@
             toggleEducationStar(educationId, button);
         }
 
+        if (action === 'edit') {
+            editEducation(educationId);
+        }
+
         if (action === 'delete') {
             openDeleteEducationModal(educationId);
         }
@@ -525,87 +686,107 @@
     // CREATE EDUCATION (DRF API)
     // ==========================================
 
-    async function addEducation(event) {
-        event.preventDefault();
+    async function submitEducation(event) {
+    event.preventDefault();
 
-        const submitButton = educationForm.querySelector(
-            'button[type="submit"]'
-        );
+    const submitButton = educationForm.querySelector(
+        'button[type="submit"]'
+    );
 
-        submitButton.disabled = true;
+    submitButton.disabled = true;
 
-        try {
-            const response = await fetch(BASE_EDUCATION_ENDPOINT, {
-                method: 'POST',
+    const isEditing = editingEducationId !== null;
+
+    try {
+        const response = await fetch(
+            isEditing
+                ? educationDetailEndpoint(editingEducationId)
+                : BASE_EDUCATION_ENDPOINT,
+            {
+                method: isEditing ? 'PATCH' : 'POST',
                 headers: {
                     'X-CSRFToken': getCookie('csrftoken'),
                     'Accept': 'application/json'
                 },
                 body: new FormData(educationForm)
-            });
-
-            const result = await response.json().catch(() => ({}));
-
-            if (!response.ok) {
-                const errorMessages = result
-                    ? Object.entries(result)
-                        .map(([field, errors]) => {
-                            const messages = Array.isArray(errors)
-                                ? errors.join(' ')
-                                : String(errors);
-
-                            return `${field}: ${messages}`;
-                        })
-                        .join(' ')
-                    : `Terjadi kesalahan (status ${response.status}).`;
-
-                throw new Error(
-                    errorMessages ||
-                    `Terjadi kesalahan (status ${response.status}).`
-                );
             }
+        );
 
-            educationForm.reset();
+        const result = await response.json().catch(() => ({}));
 
-            closeEducationModal();
+        if (!response.ok) {
+            const errorMessages = result
+                ? Object.entries(result)
+                    .map(([field, errors]) => {
+                        const messages = Array.isArray(errors)
+                            ? errors.join(' ')
+                            : String(errors);
 
-            showToast(
-                'Berhasil',
-                'Education baru berhasil ditambahkan!',
-                'success'
+                        return `${field}: ${messages}`;
+                    })
+                    .join(' ')
+                : `Terjadi kesalahan (status ${response.status}).`;
+
+            throw new Error(
+                errorMessages ||
+                `Terjadi kesalahan (status ${response.status}).`
             );
-
-            fetchEducations(searchInput.value.trim());
-
-        } catch (error) {
-            console.error('Error adding education:', error);
-
-            showToast(
-                'Gagal menambahkan education',
-                error.message,
-                'error'
-            );
-
-        } finally {
-            submitButton.disabled = false;
         }
-    }
 
+        educationForm.reset();
+        editingEducationId = null;
 
-    if (educationForm) {
-        educationForm.addEventListener('submit', addEducation);
+        closeEducationModal();
+
+        showToast(
+            'Berhasil',
+            isEditing
+                ? 'Education berhasil diperbarui!'
+                : 'Education baru berhasil ditambahkan!',
+            'success'
+        );
+
+        fetchEducations(searchInput.value.trim());
+
+    } catch (error) {
+        console.error('Error submitting education:', error);
+
+        showToast(
+            isEditing
+                ? 'Gagal memperbarui education'
+                : 'Gagal menambahkan education',
+            error.message,
+            'error'
+        );
+
+    } finally {
+        submitButton.disabled = false;
     }
+}
+
+if (educationForm) {
+    educationForm.addEventListener('submit', submitEducation);
+}
 
 
     // ==========================================
     // CLOSE EDUCATION MODAL
     // ==========================================
 
-    function closeEducationModal() {
-        document
-            .getElementById('add-education-modal')
-            .hidePopover();
-    }
+   function closeEducationModal() {
+    document
+        .getElementById('add-education-modal')
+        .hidePopover();
+
+    educationForm.reset();
+    editingEducationId = null;
+
+    document.getElementById('add-education-modal-title').textContent =
+        'Tambah Edukasi Baru';
+
+    document.getElementById('education-submit-button').textContent =
+        'Tambah Edukasi';
+}
 
 
     // ==========================================

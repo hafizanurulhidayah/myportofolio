@@ -300,6 +300,18 @@ def education_detail(request, education_id):
         return Response(serializer.data)
 
     if request.method == "DELETE":
+        secret = request.data.get("secret")
+        env_secret = os.getenv("PORTFOLIO_SECRET")
+
+        if not env_secret or not secret or not secrets.compare_digest(
+            secret,
+            env_secret
+        ):
+            return Response(
+                {"detail": "Security Code salah!"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         education.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -698,6 +698,56 @@ class EducationAPITest(APITestCase):
             status.HTTP_403_FORBIDDEN,
         )
 
+                # Guest tidak boleh mengubah atau menghapus Education
+        response = self.client.patch(
+            self.detail_url,
+            {"institution": "Changed"},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        response = self.client.delete(self.detail_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Visitor tidak boleh mengubah atau menghapus Education
+        self.client.force_authenticate(user=self.visitor)
+
+        response = self.client.patch(
+            self.detail_url,
+            {"institution": "Changed"},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        response = self.client.delete(self.detail_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Pastikan database tidak berubah
+        self.assertEqual(Education.objects.count(), 1)
+
+        self.education.refresh_from_db()
+
+        self.assertEqual(
+            self.education.institution,
+            "Universitas Indonesia",
+        )
+
     # 5. Owner dapat membuat Education
     def test_owner_can_create_education(self):
         self.client.force_authenticate(user=self.owner)
@@ -745,6 +795,7 @@ class EducationAPITest(APITestCase):
             self.assertIn(field, response.data)
 
     # 7. Owner dapat PATCH, PUT, dan DELETE Education
+    @patch.dict("os.environ", {"PORTFOLIO_SECRET": "test-secret"})
     def test_patch_put_and_delete(self):
         self.client.force_authenticate(user=self.owner)
 
@@ -794,7 +845,11 @@ class EducationAPITest(APITestCase):
         )
 
         # DELETE: menghapus Education
-        response = self.client.delete(self.detail_url)
+        response = self.client.delete(
+            self.detail_url,
+            {"secret": "test-secret"},
+            format="json",
+        )
 
         self.assertEqual(
             response.status_code,
@@ -892,6 +947,24 @@ class EducationAPITest(APITestCase):
             response.status_code,
             status.HTTP_200_OK,
         )
+
+                # Editor tidak boleh menghapus Education
+        response = self.client.delete(self.detail_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Pastikan POST yang ditolak tidak membuat data baru
+        self.assertEqual(Education.objects.count(), 1)
+
+        # Pastikan DELETE yang ditolak tidak menghapus data
+        self.assertTrue(
+            Education.objects.filter(
+                pk=self.education.id
+            ).exists()
+        )
         
     # 11. Pengujian HTTP method yang tidak diizinkan
     def test_wrong_method(self):
@@ -950,6 +1023,19 @@ class EducationAPITest(APITestCase):
         self.assertEqual(
             response.status_code,
             status.HTTP_201_CREATED,
+        )
+
+    def test_guest_cannot_star(self):
+        response = self.client.post(self.star_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        self.assertEqual(
+            self.education.starred_by.count(),
+            0,
         )
 
 
