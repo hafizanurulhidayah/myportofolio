@@ -60,7 +60,7 @@ python manage.py test
 
 ## Refleksi AI
 
-## PENGGUNAAN AI TUGAS 1 - TUGAS 5
+## PENGGUNAAN MODEL AI TUGAS 1 - TUGAS 6
 AI yang saya gunakan : ChatGpt, Gemini, Claude
 
 
@@ -86,6 +86,52 @@ membantu menyusun dan memperbaiki implementasi AJAX pada fitur Experience, Educa
 membantu menyusun penjelasan dan refleksi untuk README. 
 
 Implementasi akhir, penyesuaian kode dengan proyek, serta proses pengujian tetap saya lakukan dan verifikasi sendiri.
+
+## REFLEKSI AI TUGAS 6 
+Selama pengerjaan Task 6, ChatGPT digunakan sebagai alat bantu dalam proses pembelajaran, pengembangan, debugging, dan evaluasi implementasi.
+
+ChatGPT digunakan untuk membantu memahami konsep Django REST Framework, mendiskusikan implementasi kode, menganalisis error, dan mengevaluasi hasil pengujian.
+
+Bantuan AI digunakan pada beberapa aspek pengerjaan, yaitu:
+Memahami konsep dan implementasi serializer.
+Mendiskusikan pengembangan API views dan konfigurasi URL.
+Meninjau implementasi sistem hak akses berdasarkan peran pengguna.
+Membantu melakukan debugging pada integrasi API antara frontend dan backend.
+Mengidentifikasi kekurangan cakupan pengujian.
+Memahami implementasi CSRF protection dan penanganan HTTP request.
+
+Strategi Prompting :
+Penggunaan AI dilakukan secara bertahap dan berfokus pada permasalahan spesifik, bukan dengan meminta AI membuat keseluruhan implementasi secara langsung.
+
+Pendekatan yang digunakan antara lain:
+Memberikan potongan kode yang sedang dikerjakan agar AI dapat memahami konteks implementasi.
+Menjelaskan error atau kendala yang ditemukan secara spesifik.
+Meminta penjelasan mengenai penyebab masalah sebelum menerapkan perubahan.
+Meminta solusi yang mengikuti struktur kode dan pola implementasi pada tutorial.
+Memeriksa kembali perubahan yang disarankan sebelum mengintegrasikannya ke dalam project.
+
+Verifikasi dan Perbaikan Manual :
+Saran yang diberikan oleh AI tidak langsung diterapkan tanpa pemeriksaan.
+
+Beberapa penyesuaian manual dilakukan untuk memastikan bahwa:
+Field serializer sesuai dengan model Django yang digunakan.
+Aturan permission sesuai dengan kebutuhan setiap peran pengguna.
+Endpoint yang digunakan frontend sesuai dengan konfigurasi API.
+Routing Experience menggunakan UUID sesuai dengan primary key model.
+Request DELETE dapat mengirimkan dan memvalidasi Security Code dengan benar.
+Test case mencakup skenario akses yang diizinkan maupun ditolak.
+Hasil implementasi kemudian diperiksa melalui pengujian menggunakan Django Test Framework.
+
+Keterbatasan AI :
+Saran yang dihasilkan AI terkadang belum sepenuhnya sesuai dengan struktur project atau pola implementasi yang digunakan dalam tutorial.
+
+Beberapa saran membutuhkan pemeriksaan dan penyesuaian lebih lanjut, terutama dalam hal pengaturan permission, integrasi modal pada frontend, dan penanganan request DELETE.
+
+Oleh karena itu, penggunaan AI tetap membutuhkan pemahaman terhadap kode yang sedang dikerjakan. Setiap saran perlu dievaluasi dan diuji agar hasil akhirnya sesuai dengan kebutuhan project.
+
+Riwayat Prompt dan Percakapan AI :
+https://chatgpt.com/share/6af09911-d824-83ec-b10b-d61a59805ef8
+
 
 ### Tugas 1
 1. Pada kode html yang saya buat saya menggunakan beberapa element yang telah disebutkan di website PBP CS UI, seperti <header> yang saya gunakan untuk bagian judul di website, ;lalu <main> juga saya gunakan untuk highlight main topic / main focus pada halama tersebut, saya juga menggunakan <section> untuk membagi halaman jd bbrp bagian berbeda
@@ -215,3 +261,69 @@ Jika tidak menggunakan await yang akan terjadi adalah :
 3. SS adalah jenis kerentanan keamanan di mana penyerang berhasil menyisipkan skrip berbahaya (biasanya berupa kode JavaScript) ke dalam halaman web yang kemudian dilihat dan dieksekusi di peramban pengguna lain. Serangan ini dapat digunakan untuk mencuri cookie, sesi pengguna, atau memanipulasi tampilan halaman.
 Django Templates (Aman secara default): Mesin template bawaan Django secara otomatis melakukan auto-escaping pada variabel yang dirender ke HTML (mengubah karakter khusus seperti <, >, dan & menjadi entitas HTML yang aman), kecuali jika pengembang secara eksplisit menggunakan filter | safe. Sedangkan ajax / javascript lebih rentan karena Ketika data JSON diterima melalui AJAX dan dimasukkan ke dalam DOM menggunakan properti yang tidak aman seperti innerHTML (misalnya element.innerHTML = response.data), peramban akan memperlakukan string tersebut sebagai kode HTML/skrip aktif. Jika data dari server mengandung input pengguna berbahaya yang tidak disanitasi terlebih dahulu, skrip tersebut akan langsung tereksekusi.
 
+### Tugas 6
+Task 6 berfokus pada pengembangan dan integrasi REST API pada website portofolio berbasis Django menggunakan Django REST Framework.
+
+Implementasi dilakukan pada tiga bagian utama portofolio:
+Previous Work
+Education
+Experience
+
+Tujuan pengerjaan ini adalah menyediakan pengelolaan data melalui REST API dengan tetap memperhatikan validasi data, keamanan, pembatasan hak akses pengguna, dan integrasi dengan antarmuka website.
+
+## Perubahan Fitur yang Diimplementasikan : 
+Pengembangan API
+Membuat serializer untuk Previous Work, Education, dan Experience.
+Mengimplementasikan endpoint API untuk mengambil dan mengelola data.
+Mendukung operasi GET, POST, PUT, PATCH, dan DELETE sesuai kebutuhan setiap endpoint.
+Menambahkan fitur pencarian data.
+Mengimplementasikan fitur star dan unstar.
+Menambahkan validasi input dan pengaturan field yang bersifat read-only.
+
+## Hak Akses dan Keamanan
+
+Mengimplementasikan sistem hak akses berdasarkan peran pengguna: Guest, Visitor, Editor, dan Superuser.
+Membatasi operasi penambahan dan penghapusan data berdasarkan hak akses.
+Mengizinkan Editor untuk memperbarui data portofolio.
+Mengimplementasikan SessionAuthentication dan perlindungan CSRF untuk request yang mengubah data.
+Menambahkan validasi Security Code untuk operasi penghapusan data.
+
+## Integrasi Frontend
+Mengintegrasikan API dengan halaman Previous Work, Education, dan Experience.
+Mengimplementasikan pengambilan data secara asynchronous menggunakan JavaScript Fetch API.
+Mengintegrasikan operasi tambah, edit, dan hapus data.
+Menambahkan fitur pencarian dan interaksi star.
+Menampilkan status loading, empty state, dan error.
+Menampilkan pesan kesalahan validasi dari API melalui notifikasi.
+
+
+## Jawaban Refleksi Tugas 6 
+
+1. REST  adalah gaya arsitektur perangkat lunak untuk merancang layanan web. REST mendefinisikan sekumpulan batasan (seperti statelessness, client-server, dan antarmuka yang seragam) di mana sumber daya (resources) direpresentasikan dan dimanipulasi menggunakan metode HTTP standar. JSON hanyalah format pertukaran data (seperti halnya XML, CSV, atau HTML). Sebuah API tidak serta-merta menjadi RESTful hanya karena merespons dengan JSON. Agar memenuhi standar RESTful, API harus menerapkan prinsip arsitektur REST secara utuh, seperti : Menggunakan metode HTTP yang sesuai secara semantik, Menggunakan kode status HTTP yang benar (200 OK, 201 Created, 400 Bad Request, 401 Unauthorized, 404 Not Found, dsb.)
+
+Perbedaan PUT dan Patch dengan contohnya : 
+a. PUT: Digunakan untuk mengganti seluruh sumber daya secara penuh (full update). Jika ada atribut yang tidak disertakan dalam payload, atribut tersebut biasanya akan dihapus atau diatur ke nilai default-nya. Bersifat idempotent (jika dikirim berkali-kali dengan data yang sama, hasil akhirnya tetap sama).
+b. PATCH: Digunakan untuk pembaruan sebagian (partial update). Hanya atribut yang dikirimkan di dalam payload yang akan diubah, sementara atribut lainnya dibiarkan tetap.
+
+Contoh Penggunaan:
+PUT: Memperbarui profil pengguna dengan mengirimkan seluruh data objek (nama, email, alamat, nomor_telepon).
+PATCH: Mengubah nomor telepon pengguna saja dengan hanya mengirimkan data { "nomor_telepon": "08123456789" }.
+
+2. Peran Serializer:
+a. Serialisasi (Serialization): Mengubah data kompleks (seperti QuerySet atau Model instance Django) menjadi tipe data Python primitif, yang kemudian dapat dirender dengan mudah ke format JSON atau XML.
+b. Deserialisasi (Deserialization): Menerima data mentah (misalnya dari request body JSON), memvalidasi data tersebut berdasarkan aturan yang ditentukan, lalu mengubahnya kembali menjadi objek Python atau model instance.
+
+Keuntungan dibandingkan merakit dictionary secara manual dengan JsonResponse (Tutorial 05):
+a. Validasi Otomatis: Serializer menyediakan mekanisme validasi bawaan (is_valid(), validasi tingkat field maupun object) untuk memastikan data yang masuk aman dan sesuai skema.
+b. Pengurangan Boilerplate Code: Tidak perlu menulis fungsi manual untuk mengubah QuerySet menjadi dictionary satu per satu atau menangani serialisasi tipe data khusus (seperti datetime atau UUID).
+c. Relasi Model yang Mudah: Mendukung penanganan relasi objek yang kompleks (seperti nested serializers untuk hubungan ForeignKey atau ManyToMany).
+
+3. Perbedaan Autentikasi dan Otorisasi:
+a. Autentikasi (Authentication): Proses mengenali siapa pengguna tersebut. Contoh: Memverifikasi token, kredensial login, atau session untuk memastikan identitas pengguna.
+b. Otorisasi (Authorization): Proses menentukan apa saja yang boleh dilakukan oleh pengguna yang telah diautentikasi tersebut. Contoh: Apakah pengguna ini memiliki hak untuk menghapus data atau hanya membaca saja.
+
+Menyembunyikan tombol di frontend (antarmuka/template) hukanlah langkah keamanan, melainkan sekadar peningkatan pengalaman pengguna (UI/UX enhancement). Seorang penyerang atau pengguna usil dapat dengan mudah melewati antarmuka frontend dan mengirim HTTP request langsung ke endpoint API menggunakan alat seperti Postman, cURL, atau browser developer tools. Oleh karena itu, pemeriksaan menggunakan permission class di server wajib dilakukan untuk menjamin bahwa backend menolak permintaan tidak sah secara mutlak.
+
+4. Mengapa permintaan pengubahan data (POST, PUT, PATCH, DELETE) tetap memerlukan token CSRF saat memakai SessionAuthentication?SessionAuthentication mengandalkan cookie sesi bawaan peramban (browser) untuk mengidentifikasi pengguna. Secara otomatis, browser akan menyertakan cookie ini pada setiap permintaan ke domain terkait. Hal ini membuka celah serangan Cross-Site Request Forgery (CSRF), di mana situs berbahaya dapat memicu browser korban untuk mengirim permintaan berbahaya ke API kita atas nama pengguna yang sedang aktif. Token CSRF diperlukan untuk membuktikan bahwa permintaan tersebut benar-benar berasal dari aplikasi/formulir resmi kita, bukan dari situs eksternal yang tidak sah.
+
+Mengapa test yang memakai force_authenticate tidak cukup untuk membuktikan bahwa perlindungan CSRF berjalan?force_authenticate di DRF bekerja dengan cara mem-bypass proses autentikasi standar dan menyuntikkan objek pengguna secara langsung ke dalam request dalam lingkungan pengujian unit (unit test). Metode ini tidak melibatkan pemeriksaan cookie sesi ataupun middleware CSRF yang aktif pada alur HTTP reguler dari browser. Akibatnya, pengujian yang hanya mengandalkan force_authenticate tidak menguji apakah perlindungan CSRF benar-benar berfungsi menangkal permintaan tanpa token CSRF yang sah.
