@@ -1206,6 +1206,58 @@ class ExperienceAPITest(APITestCase):
             status.HTTP_403_FORBIDDEN,
         )
 
+                # Guest tidak boleh mengubah Experience
+        response = self.client.patch(
+            self.detail_url,
+            {"title": "Changed by Guest"},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Guest tidak boleh menghapus Experience
+        response = self.client.delete(self.detail_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Visitor tidak boleh mengubah Experience
+        self.client.force_authenticate(user=self.visitor)
+
+        response = self.client.patch(
+            self.detail_url,
+            {"title": "Changed by Visitor"},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Visitor tidak boleh menghapus Experience
+        response = self.client.delete(self.detail_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        # Pastikan database tidak berubah
+        self.assertEqual(Experience.objects.count(), 1)
+
+        self.experience.refresh_from_db()
+
+        self.assertEqual(
+            self.experience.title,
+            "Software Engineer Intern",
+        )
+
     # 5. Owner dapat membuat Experience
     def test_owner_can_create_experience(self):
         self.client.force_authenticate(
@@ -1254,6 +1306,8 @@ class ExperienceAPITest(APITestCase):
             )
 
             self.assertIn(field, response.data)
+
+    @patch.dict("os.environ", {"PORTFOLIO_SECRET": "test-secret"})
 
     # 7. Owner dapat PATCH, PUT, dan DELETE Experience
     def test_patch_put_and_delete(self):
@@ -1310,7 +1364,9 @@ class ExperienceAPITest(APITestCase):
 
         # DELETE: menghapus Experience
         response = self.client.delete(
-            self.detail_url
+            self.detail_url,
+            {"secret": "test-secret"},
+            format="json",
         )
 
         self.assertEqual(
@@ -1477,6 +1533,26 @@ class ExperienceAPITest(APITestCase):
             status.HTTP_403_FORBIDDEN,
         )
 
+                # Pastikan POST yang ditolak tidak membuat data baru
+        self.assertEqual(
+            Experience.objects.count(),
+            1,
+        )
+
+        # Pastikan DELETE yang ditolak tidak menghapus data
+        self.assertTrue(
+            Experience.objects.filter(
+                pk=self.experience.id
+            ).exists()
+        )
+
+        self.experience.refresh_from_db()
+
+        self.assertEqual(
+            self.experience.title,
+            "Updated Experience",
+        )
+
     # 11. Pengujian HTTP method yang tidak diizinkan
     def test_wrong_method(self):
         self.client.force_authenticate(
@@ -1543,4 +1619,18 @@ class ExperienceAPITest(APITestCase):
         self.assertEqual(
             response.status_code,
             status.HTTP_201_CREATED,
+        )
+
+    # Guest tidak boleh memberikan star
+    def test_guest_cannot_star(self):
+        response = self.client.post(self.star_url)
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        self.assertEqual(
+            self.experience.starred_by.count(),
+            0,
         )

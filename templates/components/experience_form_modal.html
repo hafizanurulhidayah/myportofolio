@@ -34,6 +34,7 @@
             {% csrf_token %}
 
             {% for field in form %}
+                 {% if field.name != "secret" %}
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}">
                         {{ field.label }}
@@ -45,6 +46,7 @@
                         <p class="form-error">{{ error }}</p>
                     {% endfor %}
                 </div>
+                 {% endif %}
             {% endfor %}
 
             <div class="experience-form-modal__actions">
@@ -55,9 +57,11 @@
                     Batal
                 </button>
 
-                <button type="submit" class="button">
-                    Tambah Experience
-                </button>
+              <button type="submit"
+                    class="button"
+                    id="experience-submit-button">
+                Tambah Experience
+            </button>
             </div>
 
         </form>

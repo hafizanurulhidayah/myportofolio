@@ -11,18 +11,22 @@
         <p class="section-kicker">
             Perjalanan saya sejauh ini</p>
 
-            <div class="experience-header">
-                <h1>Experience</h1>
-                {% if user.is_superuser %} 
-                    {% include "components/experience_form_modal.html" %}
-                    <button type="button"
-                    class="button experience-add-button"
-                    popovertarget="add-experience-modal">
-                <span aria-hidden="true">+</span>
-                Tambah Experience
-            </button>
-                {% endif %}   
-            </div>
+                <div class="experience-header">
+            <h1>Experience</h1>
+
+            {% if user.is_superuser %}
+                <button type="button"
+                        class="button experience-add-button"
+                        popovertarget="add-experience-modal">
+                    <span aria-hidden="true">+</span>
+                    Tambah Experience
+                </button>
+            {% endif %}
+        </div>
+
+        {% if can_edit_experience %}
+            {% include "components/experience_form_modal.html" %}
+        {% endif %}
 
             <form id="experience-search-form"
             class="experience-search">
@@ -114,10 +118,6 @@
             </div>
             {% endif %}
 
-            {% if user.is_superuser %}
-                {% include "components/experience_form_modal.html" %}
-            {% endif %}
-
             {% csrf_token %}
           
     <script>
@@ -127,11 +127,13 @@
 
         const BASE_EXPERIENCE_ENDPOINT = "{% url 'api:experience-list' %}";
 
+        const EXPERIENCE_DETAIL_TEMPLATE = "{% url 'api:experience-detail' '00000000-0000-0000-0000-000000000000' %}";
+
         const STAR_EXPERIENCE_ENDPOINT = "{% url 'api:experience-star' '00000000-0000-0000-0000-000000000000' %}";
 
         const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
 
-        const CAN_EDIT_EXPERIENCE = "{{ perms.main.change_experience|yesno:'true,false' }}" === "true";
+        const CAN_EDIT_EXPERIENCE = "{{ can_edit_experience|yesno:'true,false' }}" === "true";
 
         const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
 
@@ -217,22 +219,91 @@
         // DELETE EXPERIENCE MODAL
         // ==========================================
 
-        function openDeleteExperienceModal(experienceId) {
-            const form = document.getElementById('delete-experience-form');
+        let deletingExperienceId = null;
 
-            const deleteUrl = "{% url 'main:delete_experience' '00000000-0000-0000-0000-000000000000' %}"
-                .replace(
-                    '00000000-0000-0000-0000-000000000000',
-                    experienceId
+function openDeleteExperienceModal(experienceId) {
+    const form = document.getElementById('delete-experience-form');
+
+    deletingExperienceId = experienceId;
+    form.reset();
+
+    document
+        .getElementById('delete-experience-modal')
+        .showPopover();
+}
+
+const deleteExperienceForm = document.getElementById(
+    'delete-experience-form'
+);
+
+if (deleteExperienceForm) {
+    deleteExperienceForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const secret = document.getElementById(
+            'delete-experience-secret'
+        ).value;
+
+        const submitButton = deleteExperienceForm.querySelector(
+            'button[type="submit"]'
+        );
+
+        const url = experienceEndpoint(
+            EXPERIENCE_DETAIL_TEMPLATE,
+            deletingExperienceId
+        );
+
+        submitButton.disabled = true;
+
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    secret: secret
+                })
+            });
+
+            const result = response.status === 204
+                ? {}
+                : await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    result.detail || 'Gagal menghapus experience.'
                 );
+            }
 
-            form.action = deleteUrl;
-            form.reset();
+            deleteExperienceForm.reset();
+            deletingExperienceId = null;
 
             document
                 .getElementById('delete-experience-modal')
-                .showPopover();
+                .hidePopover();
+
+            showToast(
+                'Berhasil',
+                'Experience berhasil dihapus!',
+                'success'
+            );
+
+            await fetchExperiences(searchInput.value.trim());
+
+        } catch (error) {
+            console.error('Error deleting experience:', error);
+
+            showToast('Gagal', error.message, 'error');
+
+        } finally {
+            submitButton.disabled = false;
         }
+    });
+}
 
 
         // ==========================================
@@ -274,12 +345,17 @@
                 );
 
             const editHtml = CAN_EDIT_EXPERIENCE
-                ? `
-                    <a href="${editUrl}" class="button button-edit">
-                        Edit
-                    </a>
-                `
-                : '';
+            ? `
+                <button
+                    type="button"
+                    class="button button-edit"
+                    data-action="edit"
+                    data-id="${experienceId}"
+                >
+                    Edit
+                </button>
+            `
+            : '';
 
             const deleteHtml = IS_SUPERUSER
                 ? `
@@ -501,6 +577,10 @@
                 toggleExperienceStar(experienceId, button);
             }
 
+            if (action === 'edit') {
+                editExperience(experienceId);
+            }
+
             if (action === 'delete') {
                 openDeleteExperienceModal(experienceId);
             }
@@ -559,64 +639,90 @@
         const CREATE_EXPERIENCE_ENDPOINT = "{% url 'main:create_experience_ajax' %}";
 
 
-        async function addExperience(event) {
-            event.preventDefault();
+       // ==========================================
+// CREATE / UPDATE EXPERIENCE (DRF API)
+// ==========================================
 
-            const submitButton = experienceForm.querySelector(
-                'button[type="submit"]'
-            );
+async function addExperience(event) {
+    event.preventDefault();
 
-            submitButton.disabled = true;
+    const isEditing = editingExperienceId !== null;
 
-            try {
-                const response = await fetch(CREATE_EXPERIENCE_ENDPOINT, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: new FormData(experienceForm)
+    const url = isEditing
+        ? experienceEndpoint(EXPERIENCE_DETAIL_TEMPLATE, editingExperienceId)
+        : BASE_EXPERIENCE_ENDPOINT;
+
+    const method = isEditing ? 'PATCH' : 'POST';
+
+    const submitButton = experienceForm.querySelector(
+        'button[type="submit"]'
+    );
+
+    submitButton.disabled = true;
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Accept': 'application/json'
+            },
+            body: new FormData(experienceForm)
+        });
+
+        const result = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            const errorMessages = Object.entries(result)
+                .map(([field, errors]) => {
+                    const messages = Array.isArray(errors)
+                        ? errors
+                        : [errors];
+
+                    return messages.map(error =>
+                        typeof error === 'string' ? error : error.message
+                    ).join(' ');
                 });
 
-                const result = await response.json().catch(() => ({}));
-
-                if (!response.ok) {
-                    const errorMessages = result.errors
-                        ? Object.values(result.errors)
-                            .flat()
-                            .map(error => error.message)
-                        : [
-                            result.message ||
-                            `Terjadi kesalahan (status ${response.status}).`
-                        ];
-
-                    throw new Error(errorMessages.join(' '));
-                }
-
-                experienceForm.reset();
-
-                closeExperienceModal();
-
-                showToast(
-                    'Berhasil',
-                    'Experience baru berhasil ditambahkan!',
-                    'success'
-                );
-
-                fetchExperiences(searchInput.value.trim());
-
-            } catch (error) {
-                console.error('Error adding experience:', error);
-
-                showToast(
-                    'Gagal menambahkan experience',
-                    error.message,
-                    'error'
-                );
-
-            } finally {
-                submitButton.disabled = false;
-            }
+            throw new Error(
+                errorMessages.join(' ') ||
+                `Terjadi kesalahan (status ${response.status}).`
+            );
         }
+
+        experienceForm.reset();
+        editingExperienceId = null;
+
+        document.getElementById('add-experience-modal-title').textContent =
+            'Tambah Experience Baru';
+
+        submitButton.textContent = 'Tambah Experience';
+
+        closeExperienceModal();
+
+        showToast(
+            'Berhasil',
+            isEditing
+                ? 'Experience berhasil diperbarui!'
+                : 'Experience baru berhasil ditambahkan!',
+            'success'
+        );
+
+        await fetchExperiences(searchInput.value.trim());
+
+    } catch (error) {
+        console.error('Error saving experience:', error);
+
+        showToast(
+            'Gagal',
+            error.message,
+            'error'
+        );
+
+    } finally {
+        submitButton.disabled = false;
+    }
+}
 
 
         if (experienceForm) {
@@ -633,6 +739,56 @@
                 .getElementById('add-experience-modal')
                 .hidePopover();
         }
+
+        let editingExperienceId = null;
+
+async function editExperience(experienceId) {
+    try {
+        const url = experienceEndpoint(
+            EXPERIENCE_DETAIL_TEMPLATE,
+            experienceId
+        );
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Gagal mengambil detail experience.');
+        }
+
+        const experience = await response.json();
+
+        document.getElementById('id_title').value = experience.title;
+        document.getElementById('id_description').value = experience.description;
+        document.getElementById('id_category').value = experience.category;
+        document.getElementById('id_thumbnail').value = experience.thumbnail || '';
+
+        document.getElementById('id_started_at').value =
+            experience.started_at.slice(0, 16);
+
+        document.getElementById('id_ended_at').value =
+            experience.ended_at ? experience.ended_at.slice(0, 16) : '';
+
+        editingExperienceId = experienceId;
+
+        document.getElementById('add-experience-modal-title').textContent =
+            'Edit Experience';
+
+        document.querySelector('#experience-form button[type="submit"]').textContent =
+            'Simpan Perubahan';
+
+        document.getElementById('add-experience-modal').showPopover();
+
+    } catch (error) {
+        console.error('Error editing experience:', error);
+
+        showToast('Gagal', error.message, 'error');
+    }
+}
 
 
         // ==========================================

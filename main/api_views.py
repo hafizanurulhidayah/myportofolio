@@ -268,7 +268,19 @@ def experience_detail(request, experience_id):
         )
         return Response(serializer.data)
 
-    if request.method == "DELETE":
+    elif request.method == "DELETE":
+        expected_secret = os.environ.get("PORTFOLIO_SECRET")
+        provided_secret = request.data.get("secret", "")
+
+        if not expected_secret:
+            raise PermissionDenied("Security Code is not configured.")
+
+        if not secrets.compare_digest(provided_secret, expected_secret):
+            return Response(
+                {"detail": "Security Code salah."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         experience.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
