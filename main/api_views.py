@@ -1,3 +1,5 @@
+import os
+import secrets
 
 from django.shortcuts import get_object_or_404
 
@@ -77,7 +79,23 @@ def project_detail(request, project_id):
         return Response(serializer.data)
 
     if request.method == "DELETE":
+        secret = request.data.get("secret")
+        env_secret = os.getenv("PORTFOLIO_SECRET")
+
+        if not env_secret:
+            return Response(
+                {"detail": "Security Code belum dikonfigurasi di server."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        if not secret or not secrets.compare_digest(
+            str(secret),
+            env_secret
+        ):
+            raise PermissionDenied("Security Code salah!")
+
         previous_work.delete()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     serializer = ProjectSerializer(

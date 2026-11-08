@@ -219,17 +219,22 @@ def show_experience(request):
 def show_previous_work(request):
     search_query = request.GET.get("search", "").strip()
 
+    can_edit_previous_work = (
+        request.user.is_authenticated
+        and (
+            request.user.is_superuser
+            or request.user.groups.filter(name="Editor").exists()
+        )
+    )
+
     context = {
         "name": "Hafiza Nurul Hidayah",
         "search_query": search_query,
-         "form": PreviousWorkForm(),
+        "form": PreviousWorkForm(),
+        "can_edit_previous_work": can_edit_previous_work,
     }
 
-    return render(
-        request,
-        "PreviousWork.html",
-        context
-    )
+    return render(request, "PreviousWork.html", context)
 
 def show_education(request):
     title_query = request.GET.get("title", "").strip()
@@ -691,7 +696,10 @@ def update_previous_work(request, previous_work_id):
         pk=previous_work_id
     )
 
-    if not request.user.has_perm("main.change_previouswork"):
+    if not (
+    request.user.is_superuser
+    or request.user.groups.filter(name="Editor").exists()
+    ):
         raise PermissionDenied
 
     if request.method == "POST":

@@ -33,31 +33,69 @@ class MainTest(TestCase):
         self.assertTrue(self.experience.is_ongoing)
 
     def test_experience_page(self):
-        response = self.client.get(reverse("main:show_experience"))
+        response = self.client.get(
+            reverse("main:show_experience")
+        )
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "experience.html")
-        self.assertContains(response, self.experience.title)
-        self.assertContains(response, self.experience.description)
-        self.assertContains(response, "Part-Time")
-        self.assertContains(response, "Sedang berlangsung")
-        self.assertContains(response, f'href="{reverse("main:show_main")}"')
+        self.assertContains(response, 'id="grid"')
 
+        api_response = self.client.get(
+            reverse("api:experience-list")
+        )
+
+        self.assertEqual(api_response.status_code, 200)
+
+        data = api_response.json()
+
+        experience_data = next(
+            item for item in data
+            if item["id"] == str(self.experience.id)
+        )
+
+        self.assertEqual(
+            experience_data["title"],
+            self.experience.title
+        )
+        
     def test_empty_experience_page(self):
         Experience.objects.all().delete()
         response = self.client.get(reverse("main:show_experience"))
 
-        self.assertContains(response, "Belum ada experience yang ditambahkan.")
+        self.assertContains(response, "Belum ada experience yang ditambahkan")
 
     def test_completed_experience(self):
-        self.experience.ended_at = timezone.now()
-        self.experience.save()
-        response = self.client.get(reverse("main:show_experience"))
+        completed_experience = Experience.objects.create(
+            title="Web Developer Intern",
+            description="Mengembangkan website.",
+            category="internship",
+            started_at=timezone.make_aware(datetime(2025, 1, 1)),
+            ended_at=timezone.make_aware(datetime(2025, 6, 1)),
+        )
 
-        self.assertFalse(self.experience.is_ongoing)
-        self.assertContains(response, "Selesai")
-        self.assertNotContains(response, "Sedang berlangsung")
+        response = self.client.get(
+            reverse("main:show_experience")
+        )
 
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="grid"')
+
+        api_response = self.client.get(
+            reverse("api:experience-list")
+        )
+
+        self.assertEqual(api_response.status_code, 200)
+
+        data = api_response.json()
+
+        experience_data = next(
+            item for item in data
+            if item["id"] == str(completed_experience.id)
+        )
+
+        self.assertFalse(experience_data["is_ongoing"])
+
+        
 class PreviousWorkTest(TestCase):
     def test_previous_work_url_and_template(self):
         response = self.client.get(
@@ -84,20 +122,36 @@ class PreviousWorkTest(TestCase):
             reverse("main:show_previous_work")
         )
 
-        self.assertContains(
-            response,
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="previous-work-grid"')
+
+        api_response = self.client.get(
+            reverse("api:project-list")
+        )
+
+        self.assertEqual(api_response.status_code, 200)
+
+        data = api_response.json()
+
+        previous_work_data = next(
+            item for item in data
+            if item["id"] == previous_work.id
+        )
+
+        self.assertEqual(
+            previous_work_data["title"],
             previous_work.title
         )
-        self.assertContains(
-            response,
+        self.assertEqual(
+            previous_work_data["role"],
             previous_work.role
         )
-        self.assertContains(
-            response,
+        self.assertEqual(
+            previous_work_data["description"],
             previous_work.description
         )
-        self.assertContains(
-            response,
+        self.assertEqual(
+            previous_work_data["category"],
             previous_work.category
         )
 
@@ -108,5 +162,5 @@ class PreviousWorkTest(TestCase):
 
         self.assertContains(
             response,
-            "Belum ada previous work yang ditambahkan."
+            "Belum ada previous work yang ditambahkan"
         )

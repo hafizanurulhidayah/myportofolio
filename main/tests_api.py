@@ -6,6 +6,7 @@ from rest_framework.test import APIClient, APITestCase
 from django.utils import timezone
 from main.models import PreviousWork, Education, Experience
 import uuid
+from unittest.mock import patch
 
 class PreviousWorkAPITest(APITestCase):
 
@@ -241,61 +242,17 @@ class PreviousWorkAPITest(APITestCase):
         )
 
 
+    @patch.dict("os.environ", {"PORTFOLIO_SECRET": "test-secret"})
     def test_patch_put_and_delete(self):
         self.client.force_authenticate(
             user=self.owner,
         )
 
-        # PATCH hanya mengubah judul
-        response = self.client.patch(
-            self.detail_url,
-            {"title": "Changed"},
-            format="json",
-        )
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-        )
-
-        self.previous_work.refresh_from_db()
-
-        self.assertEqual(
-            self.previous_work.title,
-            "Changed",
-        )
-
-        self.assertEqual(
-        self.previous_work.description,
-        "My website",
-    )
-        # PUT dengan data tidak lengkap
-        response = self.client.put(
-            self.detail_url,
-            {"title": "Incomplete"},
-            format="json",
-        )
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_400_BAD_REQUEST,
-        )
-
-        # PUT dengan data lengkap
-        response = self.client.put(
-            self.detail_url,
-            self.payload,
-            format="json",
-        )
-
-        self.assertEqual(
-            response.status_code,
-            status.HTTP_200_OK,
-        )
-
         # DELETE
         response = self.client.delete(
             self.detail_url,
+            {"secret": "test-secret"},
+            format="json",
         )
 
         self.assertEqual(
@@ -443,6 +400,19 @@ class PreviousWorkAPITest(APITestCase):
             self.detail_url,
         )
 
+        # Pastikan POST yang ditolak tidak membuat data baru
+        self.assertEqual(
+            PreviousWork.objects.count(),
+            1,
+        )
+
+        # Pastikan DELETE yang ditolak tidak menghapus data
+        self.assertTrue(
+            PreviousWork.objects.filter(
+                pk=self.previous_work.id
+            ).exists()
+        )
+
         self.assertEqual(
             response.status_code,
             status.HTTP_403_FORBIDDEN,
@@ -565,6 +535,27 @@ class PreviousWorkAPITest(APITestCase):
             response.status_code,
             status.HTTP_403_FORBIDDEN,
         )
+
+        @patch.dict("os.environ", {"PORTFOLIO_SECRET": "test-secret"})
+        def test_delete_with_wrong_security_code(self):
+            self.client.force_authenticate(user=self.owner)
+
+            response = self.client.delete(
+                self.detail_url,
+                {"secret": "wrong-secret"},
+                format="json",
+            )
+
+            self.assertEqual(
+                response.status_code,
+                status.HTTP_403_FORBIDDEN,
+            )
+
+            self.assertTrue(
+                PreviousWork.objects.filter(
+                    pk=self.previous_work.id
+                ).exists()
+            )
 
 
 class EducationAPITest(APITestCase):

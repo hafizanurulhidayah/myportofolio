@@ -17,14 +17,15 @@
             <div class="previous-work-header">
                 <h1>Previous Work</h1>
 
-               {% if user.is_superuser %}
-                <button type="button"
-                        class="button previous-work-add-button"
-                        popovertarget="add-previous-work-modal">
+            
+            <button type="button"
+                    id="add-previous-work-button"
+                    class="button previous-work-add-button"
+                    popovertarget="add-previous-work-modal">
                     <span aria-hidden="true">+</span>
                     Tambah Previous Work
                 </button>
-            {% endif %}
+    
             </div>
 
             <form id="previous-work-search-form"
@@ -133,10 +134,7 @@
     </div>
 </div>
 {% endif %}
-
-{% if user.is_superuser %}
     {% include "components/previous_work_form_modal.html" %}
-{% endif %}
 {% csrf_token %}
 {% csrf_token %}
 
@@ -154,13 +152,10 @@
     const PREVIOUS_WORK_STAR_TEMPLATE =
         "{% url 'api:project-star' 0 %}";
 
-    const UPDATE_PREVIOUS_WORK_TEMPLATE =
-        "{% url 'main:update_previous_work' 0 %}";
-
     const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
     const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
-    const CAN_EDIT_PREVIOUS_WORK = IS_SUPERUSER;
-
+    const CAN_EDIT_PREVIOUS_WORK ="{{ can_edit_previous_work|yesno:'true,false' }}" === "true";
+    let editingPreviousWorkId = null;
 
     // ==========================================
     // 2. GET HTML ELEMENTS
@@ -187,9 +182,17 @@
     const addModal =
         document.getElementById("add-previous-work-modal");
 
+    const addButton =
+    document.getElementById("add-previous-work-button");
+
     const previousWorkForm =
         document.getElementById("previous-work-form");
-        
+      
+    const modalTitle =
+    document.getElementById("previous-work-modal-title");
+
+    const submitButton =
+    document.getElementById("previous-work-submit-button");
 
     const deleteModal =
         document.getElementById("delete-previous-work-modal");
@@ -258,21 +261,44 @@
     }
 
 
-    function updatePreviousWorkEndpoint(previousWorkId) {
-        return UPDATE_PREVIOUS_WORK_TEMPLATE.replace(
-            "/0/",
-            `/${previousWorkId}/`
-        );
+    function setPreviousWorkFormMode(mode) {
+    if (mode === "edit") {
+        modalTitle.textContent = "Edit Previous Work";
+        submitButton.textContent = "Simpan Perubahan";
+    } else {
+        modalTitle.textContent = "Tambah Previous Work Baru";
+        submitButton.textContent = "Tambah Previous Work";
+        editingPreviousWorkId = null;
+
+        previousWorkForm.reset();
     }
+}
+
+// ==========================================
+// ADD BUTTON EVENT LISTENER
+// ==========================================
+
+if (addButton) {
+    addButton.addEventListener("click", function () {
+        setPreviousWorkFormMode("add");
+    });
+}
 
 
-    function showNotification(message) {
-        if (typeof showToast === "function") {
-            showToast(message);
-        } else {
-            alert(message);
-        }
+
+   
+function showNotification(message, type = "normal") {
+    if (typeof showToast === "function") {
+        const title =
+            type === "success" ? "Berhasil!" :
+            type === "error" ? "Terjadi Kesalahan" :
+            "Informasi";
+
+        showToast(title, message, type);
+    } else {
+        alert(message);
     }
+}
 
 
     async function getResponseData(response) {
@@ -284,25 +310,46 @@
     }
 
 
-    function getErrorMessage(data) {
-        if (!data) {
+    
+        function getErrorMessage(data) {
+            if (!data) {
+                return "Terjadi kesalahan. Silakan coba lagi.";
+            }
+
+            if (data.message) {
+                return data.message;
+            }
+
+            if (data.detail) {
+                return data.detail;
+            }
+
+            // Menangani error validasi dari Django REST Framework
+            const fieldErrors = Object.entries(data)
+                .filter(([key]) => !["message", "detail"].includes(key))
+                .flatMap(([field, errors]) => {
+                    if (Array.isArray(errors)) {
+                        return errors.map(error => `${field}: ${error}`);
+                    }
+
+                    if (typeof errors === "string") {
+                        return [`${field}: ${errors}`];
+                    }
+
+                    return [];
+                });
+
+            if (fieldErrors.length > 0) {
+                return fieldErrors.join("\n");
+            }
+
+            if (data.errors) {
+                return JSON.stringify(data.errors);
+            }
+
             return "Terjadi kesalahan. Silakan coba lagi.";
         }
 
-        if (data.message) {
-            return data.message;
-        }
-
-        if (data.detail) {
-            return data.detail;
-        }
-
-        if (data.errors) {
-            return JSON.stringify(data.errors);
-        }
-
-        return "Terjadi kesalahan. Silakan coba lagi.";
-    }
 
 
     // ==========================================
@@ -396,17 +443,18 @@
 
 
         // Edit button
-        const editButtonHTML = CAN_EDIT_PREVIOUS_WORK
-            ? `
-                <a
-                    href="${updatePreviousWorkEndpoint(previousWorkId)}"
-                    class="button button-edit"
-                >
-                    Edit
-                </a>
-            `
-            : "";
-
+       const editButtonHTML = CAN_EDIT_PREVIOUS_WORK
+        ? `
+        <button
+            type="button"
+            class="button button-edit"
+            data-action="edit"
+            data-id="${previousWorkId}"
+        >
+            Edit
+        </button>
+    `
+    : "";
 
         // Delete button
         const deleteButtonHTML = IS_SUPERUSER
@@ -570,6 +618,59 @@
         }
     }
 
+    // ==========================================
+// EDIT PREVIOUS WORK
+// ==========================================
+
+async function editPreviousWork(previousWorkId) {
+    try {
+        const response = await fetch(
+            previousWorkDetailEndpoint(previousWorkId),
+            {
+                method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                },
+                credentials: "same-origin"
+            }
+        );
+
+        const data = await getResponseData(response);
+
+        if (!response.ok) {
+            throw new Error(getErrorMessage(data));
+        }
+
+        editingPreviousWorkId = previousWorkId;
+
+        previousWorkForm.elements["title"].value =
+            data.title ?? "";
+
+        previousWorkForm.elements["role"].value =
+            data.role ?? "";
+
+        previousWorkForm.elements["description"].value =
+            data.description ?? "";
+
+        previousWorkForm.elements["date"].value =
+            data.date ?? "";
+
+        previousWorkForm.elements["category"].value =
+            data.category ?? "";
+
+        previousWorkForm.elements["link"].value =
+            data.project_url ?? "";
+
+        setPreviousWorkFormMode("edit");
+
+        addModal.showPopover();
+
+    } catch (error) {
+        console.error("Error fetching Previous Work:", error);
+        showNotification(error.message, "error");
+    }
+}
+
 
     // ==========================================
     // 7. CONVERT DJANGO FORM DATA TO API FORM DATA
@@ -613,87 +714,99 @@
         return apiFormData;
     }
 
+    
 
     // ==========================================
-    // 8. CREATE PREVIOUS WORK
-    // ==========================================
+// 8. CREATE AND UPDATE PREVIOUS WORK
+// ==========================================
 
-    if (previousWorkForm) {
-        previousWorkForm.addEventListener(
-            "submit",
-            async function (event) {
+if (previousWorkForm) {
+    previousWorkForm.addEventListener(
+        "submit",
+        async function (event) {
 
-                
-                event.preventDefault();
+            event.preventDefault();
 
-                const submitButton =
-                    previousWorkForm.querySelector(
-                        'button[type="submit"]'
-                    );
+            const submitButton =
+                previousWorkForm.querySelector(
+                    'button[type="submit"]'
+                );
 
-                if (submitButton) {
-                    submitButton.disabled = true;
+            if (submitButton) {
+                submitButton.disabled = true;
+            }
+
+            try {
+                const apiFormData =
+                    convertFormDataToApiData(previousWorkForm);
+
+                // POST untuk tambah, PATCH untuk edit.
+                const isEditing = editingPreviousWorkId !== null;
+
+                const method = isEditing ? "PATCH" : "POST";
+
+                const endpoint = isEditing
+                    ? previousWorkDetailEndpoint(editingPreviousWorkId)
+                    : BASE_PREVIOUS_WORK_ENDPOINT;
+
+                const response = await fetch(endpoint, {
+                    method: method,
+
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "Accept": "application/json"
+                    },
+
+                    credentials: "same-origin",
+
+                    body: apiFormData
+                });
+
+                const data = await getResponseData(response);
+
+                if (!response.ok) {
+                    throw new Error(getErrorMessage(data));
                 }
 
-                try {
-                    const apiFormData =
-                        convertFormDataToApiData(previousWorkForm);
+                // Reset form setelah berhasil.
+                previousWorkForm.reset();
 
-                    const response = await fetch(
-                        BASE_PREVIOUS_WORK_ENDPOINT,
-                        {
-                            method: "POST",
+                editingPreviousWorkId = null;
 
-                            headers: {
-                                "X-CSRFToken": getCookie("csrftoken"),
-                                "Accept": "application/json"
-                            },
+                setPreviousWorkFormMode("add");
 
-                            credentials: "same-origin",
+                if (
+                    addModal &&
+                    addModal.matches(":popover-open")
+                ) {
+                    addModal.hidePopover();
+                }
 
-                            body: apiFormData
-                        }
-                    );
+                showNotification(
+                    isEditing
+                        ? "Previous Work berhasil diperbarui!"
+                        : "Previous Work berhasil ditambahkan!",
+                    "success"
+                );
 
-                    const data = await getResponseData(response);
+                await fetchPreviousWorks();
 
-                    if (!response.ok) {
-                        throw new Error(getErrorMessage(data));
-                    }
+            } catch (error) {
+                console.error(
+                    "Error saving Previous Work:",
+                    error
+                );
 
-                    previousWorkForm.reset();
+                showNotification(error.message, "error");
 
-                    if (
-                        addModal &&
-                        addModal.matches(":popover-open")
-                    ) {
-                        addModal.hidePopover();
-                    }
-
-                    showNotification(
-                        "Previous Work berhasil ditambahkan!"
-                    );
-
-                    await fetchPreviousWorks();
-
-                } catch (error) {
-                    console.error(
-                        "Error creating Previous Work:",
-                        error
-                    );
-
-                    showNotification(error.message);
-
-                } finally {
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                    }
+            } finally {
+                if (submitButton) {
+                    submitButton.disabled = false;
                 }
             }
-        );
-    }
-   
-    
+        }
+    );
+}
 
 
     // ==========================================
@@ -731,6 +844,21 @@
                     '[data-action="delete"]'
                 );
 
+                const editButton = event.target.closest(
+                    '[data-action="edit"]'
+                );
+
+                // ----------------------------------
+                // EDIT
+                // ----------------------------------
+
+                if (editButton) {
+                    const previousWorkId = editButton.dataset.id;
+
+                    await editPreviousWork(previousWorkId);
+
+                    return;
+                }
 
                 // ----------------------------------
                 // STAR
